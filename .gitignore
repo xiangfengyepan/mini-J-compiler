@@ -1,0 +1,11 @@
+G/__pycache__
+G/venv
+test/*
+G/*.interp
+G/*.tokens
+G/gLexer*
+G/gParser*
+G/gListener*
+G/gVisitor*
+
+
