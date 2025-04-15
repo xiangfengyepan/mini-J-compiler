@@ -57,12 +57,8 @@ ESC_SEQ   : '\\' ('b'|'t'|'n'|'f'|'r'|'"'|'\''|'\\') ;
 
 NEWLINE : '\r'? '\n' ;
 
-// Comentario de una línea al estilo G (NB.)
 COMMENT: 'NB.' ~[\r\n]* -> skip;
 
 // White spaces
-WS        : (' '|'\t'|'\r'|'\n')+ -> skip ;
-// Alternative description
-// WS        : [ \t\r\n]+ -> skip ;       
-
+WS        : [ \t\r]+ -> skip ;    
 
