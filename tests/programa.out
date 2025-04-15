@@ -2,29 +2,16 @@
 [1 1 1]
 [2 3 4]
 [2 3 4]
-length error
+error: operands could not be broadcast together with shapes (2,) (3,) 
 11
 13
 16
 [-2 -3]
-3
-6
-3
-1
-8
-1
-0
-1
-0
-1
-1
-0
-0
-1
-[0 1 0]
-1
-0
-[0 0 1]
-1
-0
-[1 1 0]
+[1 2 3]
+[1 1 1]
+[2 3 4]
+[2 3 4]
+error: operands could not be broadcast together with shapes (2,) (3,) 
+11
+13
+16

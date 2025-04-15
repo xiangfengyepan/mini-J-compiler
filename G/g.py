@@ -1,4 +1,4 @@
-import sys
+import sys, os
 from antlr4 import *
 from gLexer import gLexer
 from gParser import gParser
@@ -44,11 +44,12 @@ def main():
     visitor = CodeGenVisitor()
     results = visitor.visit(tree)
 
-    
+
     filtered_output = "\n".join(str(r) for r in results if r is not None)
 
     if is_test:
-        with open(f"{file_name}.out", "w") as out_file:
+        base_name = os.path.splitext(file_name)[0]
+        with open(f"{base_name}.out", "w") as out_file:
             out_file.write(filtered_output)
     else:
         CYAN = "\033[96m"

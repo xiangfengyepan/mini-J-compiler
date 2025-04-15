@@ -23,5 +23,9 @@ venv:
 run: all
 	. venv/bin/activate && python3 g.py ../tests/programa.j
 
+test: all
+	. venv/bin/activate && python3 g.py --test ../tests/programa.j
+
+
 .PHONY: venv
 
