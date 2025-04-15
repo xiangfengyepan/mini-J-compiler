@@ -9,8 +9,9 @@ class GVisitorImpl(gVisitor):
 
     @debug_visit
     def visitProgram(self, ctx):
-        resultats = [self.visit(child) for child in ctx.statement()]
-        return resultats[-1] if resultats else None
+        results = [self.visit(child) for child in ctx.statement()]
+        print("\n".join(map(str, results)))
+        return results[-1] if results else None
 
     #######################
     # Statements Visitors #
@@ -75,16 +76,17 @@ class GVisitorImpl(gVisitor):
     def visitAritmetic(self, ctx):
         lhs = self.visit(ctx.expr(0))
         rhs = self.visit(ctx.expr(1))
-        op = ctx.op.text
 
-        if op == '*':
+        if ctx.MUL():
             return np.multiply(lhs, rhs)
-        elif op == '/':
+        elif ctx.DIV():
             return np.divide(lhs, rhs)
-        elif op == '+':
+        elif ctx.PLUS():
             return np.add(lhs, rhs)
-        elif op == '-':
+        elif ctx.MINUS():
             return np.subtract(lhs, rhs)
+        elif ctx.MOD():
+            return np.mod(lhs, rhs)
 
     @debug_visit
     def visitLogical(self, ctx):

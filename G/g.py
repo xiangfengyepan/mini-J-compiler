@@ -29,14 +29,11 @@ def main():
     tree = parser.program()
 
     if error_listener.hay_error:
-        print("→ S'han trobat errors. No s'executa el visitor.")
+        print("→ Lexical erros founded. Aborting program execution.")
         return
 
     visitor = GVisitorImpl()
-    resultat = visitor.visit(tree)
-
-    if resultat is not None:
-        print("Resultat final:", resultat)
+    visitor.visit(tree)
 
 
 if __name__ == '__main__':

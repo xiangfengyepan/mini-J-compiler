@@ -59,6 +59,5 @@ NEWLINE : '\r'? '\n' ;
 
 COMMENT: 'NB.' ~[\r\n]* -> skip;
 
-// White spaces
 WS        : [ \t\r]+ -> skip ;    
 
