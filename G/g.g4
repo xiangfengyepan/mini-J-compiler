@@ -11,16 +11,14 @@ delaration: ID ASSIGN expr NEWLINE;
 
 expr
     : '(' expr ')'                          # parent
-    | expr op=COMPOSE expr                  # composition
-    | ID expr+                              # funcCall
     | ID                                    # variable
-    | op=(NEG|PLUS|MINUS|IDENTITY) expr     # unary
+    | ID expr+                              # funcCall
+    | op=(NEG|PLUS|MINUS) expr              # unary
     | expr op=(MUL|DIV|MOD) expr            # aritmetic
     | expr op=(PLUS|MINUS) expr             # aritmetic
     | expr op=(EQUAL|NEG|LT|GT|LE|GE) expr  # relational
     | expr op=AND expr                      # logical
     | expr op=OR expr                       # logical
-    | IDENTITY                              # identity
     | INTVAL                                # value
     | FLOATVAL                              # value
     ;
@@ -41,9 +39,6 @@ MINUS       : '-';
 MUL         : '*';
 DIV         : '%';
 MOD         : '|';
-
-IDENTITY    : ']' ;
-COMPOSE     : '@:';  
 
 INTVAL    : ('0'..'9')+ ;
 FLOATVAL  : ('0'..'9')+ '.' ('0'..'9')+ ;

@@ -43,12 +43,7 @@ class CodeGenVisitor(gVisitor):
         return self.visit(ctx.expr())
 
     @debug_visit
-    def visitComposition(self, ctx):
-        # TODO
-        return
-
-    @debug_visit
-    def visitIdentity(self, ctx):
+    def visitFuncCall(self, ctx):
         # TODO
         return
 

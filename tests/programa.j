@@ -1,6 +1,4 @@
-mod2 =: 2 % ] NB. this is a comment
-eq0 =: 0 = ]
-parell =: eq0 @: mod2
-parell 3
-2 + (5 * 5) + (5 % 3) - (5 | 3)
+a =: 2
+a
+a + (5 * 5) + (5 % 3) - (5 | 3)
 
