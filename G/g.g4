@@ -4,15 +4,16 @@ program: statement+;
 
 statement
     : expr NEWLINE
-    | funcDef
+    | delaration
     ;
 
-funcDef: ID ASSIGN expr NEWLINE;
+delaration: ID ASSIGN expr NEWLINE;
 
 expr
     : '(' expr ')'                          # parent
     | expr op=COMPOSE expr                  # composition
-    | ID expr*                              # funcCall
+    | ID expr+                              # funcCall
+    | ID                                    # variable
     | op=(NEG|PLUS|MINUS|IDENTITY) expr     # unary
     | expr op=(MUL|DIV|MOD) expr            # aritmetic
     | expr op=(PLUS|MINUS) expr             # aritmetic
@@ -20,7 +21,6 @@ expr
     | expr op=AND expr                      # logical
     | expr op=OR expr                       # logical
     | IDENTITY                              # identity
-    | ID                                    # variable
     | INTVAL                                # value
     | FLOATVAL                              # value
     ;

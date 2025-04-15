@@ -3,7 +3,7 @@ import numpy as np
 from gVisitor import gVisitor
 from utils import debug_visit
 
-class GVisitorImpl(gVisitor):
+class CodeGenVisitor(gVisitor):
     def __init__(self):
         super().__init__()
 
@@ -19,16 +19,16 @@ class GVisitorImpl(gVisitor):
 
     @debug_visit
     def visitStatement(self, ctx):
-        # Statement can be either expr NEWLINE or funcDef
+        # Statement can be either expr NEWLINE or delaration
         if ctx.expr():
             return self.visit(ctx.expr())
-        elif ctx.funcDef():
-            return self.visit(ctx.funcDef())
+        elif ctx.delaration():
+            return self.visit(ctx.delaration())
         else:
             return None
 
     @debug_visit
-    def visitFuncDef(self, ctx):
+    def visitDelaration(self, ctx):
         # TODO
         return
 

@@ -2,7 +2,7 @@ import sys
 from antlr4 import *
 from gLexer import gLexer
 from gParser import gParser
-from gVisitorImpl import GVisitorImpl
+from CodeGenVisitor import CodeGenVisitor
 from utils import MyErrorListener
 
 def main():
@@ -32,7 +32,7 @@ def main():
         print("→ Lexical erros founded. Aborting program execution.")
         return
 
-    visitor = GVisitorImpl()
+    visitor = CodeGenVisitor()
     visitor.visit(tree)
 
 
