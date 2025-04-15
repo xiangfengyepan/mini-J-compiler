@@ -34,7 +34,17 @@ def main():
 
     visitor = CodeGenVisitor()
     results = visitor.visit(tree)
+
+    CYAN = "\033[96m"
+    RESET = "\033[0m"
+    BOLD = "\033[1m"
+
+    print()
+    print("📦 CodeGen Visitor Results")
+    print(f"{CYAN}==========================={RESET}")
+
     print("\n".join(map(str, results)))
+
 
 if __name__ == '__main__':
     main()
