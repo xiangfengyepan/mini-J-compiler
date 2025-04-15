@@ -1,4 +1,5 @@
 G/__pycache__
+G/.antlr
 G/venv
 G/*.interp
 G/*.tokens
