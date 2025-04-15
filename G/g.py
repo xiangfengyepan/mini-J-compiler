@@ -33,8 +33,8 @@ def main():
         return
 
     visitor = CodeGenVisitor()
-    visitor.visit(tree)
-
+    results = visitor.visit(tree)
+    print("\n".join(map(str, results)))
 
 if __name__ == '__main__':
     main()

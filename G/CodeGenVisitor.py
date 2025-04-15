@@ -6,12 +6,12 @@ from utils import debug_visit
 class CodeGenVisitor(gVisitor):
     def __init__(self):
         super().__init__()
+        self.variables = {}
 
     @debug_visit
     def visitProgram(self, ctx):
         results = [self.visit(child) for child in ctx.statement()]
-        print("\n".join(map(str, results)))
-        return results[-1] if results else None
+        return results
 
     #######################
     # Statements Visitors #
@@ -29,7 +29,9 @@ class CodeGenVisitor(gVisitor):
 
     @debug_visit
     def visitDelaration(self, ctx):
-        # TODO
+        name = ctx.ID().getText()
+        value = self.visit(ctx.expr())
+        self.variables[name] = value
         return
 
     ##################
@@ -52,8 +54,8 @@ class CodeGenVisitor(gVisitor):
 
     @debug_visit
     def visitVariable(self, ctx):
-        # TODO
-        return
+        var = self.variables[ctx.ID().getText()]
+        return var
 
     @debug_visit
     def visitRelational(self, ctx):
