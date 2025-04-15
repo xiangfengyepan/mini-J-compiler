@@ -4,11 +4,11 @@ program: statement+;
 
 statement
     : expr NEWLINE
-    | delaration
+    | declaration
     | NEWLINE
     ;
 
-delaration: ID ASSIGN expr NEWLINE;
+declaration: ID ASSIGN expr NEWLINE;
 
 expr
     : '(' expr ')'                          # parent

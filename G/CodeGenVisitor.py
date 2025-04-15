@@ -10,7 +10,7 @@ class CodeGenVisitor(gVisitor):
 
     @debug_visit
     def visitProgram(self, ctx):
-        results = [self.visit(child) for child in ctx.statement()]
+        results = [self.visit(child)  for child in ctx.statement()]
         return results
 
     #######################
@@ -19,14 +19,14 @@ class CodeGenVisitor(gVisitor):
 
     @debug_visit
     def visitStatement(self, ctx):
-        # Statement can be either expr NEWLINE or delaration
+        # Statement can be either expr NEWLINE or declaration
         if ctx.expr():
             return self.visit(ctx.expr())
-        elif ctx.delaration():
-            return self.visit(ctx.delaration())
+        elif ctx.declaration():
+            return self.visit(ctx.declaration())
 
     @debug_visit
-    def visitDelaration(self, ctx):
+    def visitDeclaration(self, ctx):
         name = ctx.ID().getText()
         value = self.visit(ctx.expr())
         self.variables[name] = value

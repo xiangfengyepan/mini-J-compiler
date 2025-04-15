@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Path to the jconsole executable
+JCONSOLE_PATH="/opt/j9.6/bin/jconsole"
+
+# Directory containing the .j files
+INPUT_DIR="../tests/basics/"
+
+# Iterate over all .j files in the input directory
+for jfile in ${INPUT_DIR}*.j; do
+    echo "Processing: $jfile -> $output_file"
+    # Get the base name of the file without the extension
+    base_name=$(basename "$jfile" .j)
+    
+    # Redirect output to a corresponding .solve file
+    output_file="${INPUT_DIR}${base_name}.solve"
+    
+    # Execute jconsole and redirect output
+    $JCONSOLE_PATH < "$jfile" > "$output_file"
+    
+done
