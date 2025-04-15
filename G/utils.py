@@ -1,7 +1,7 @@
 
 from antlr4.error.ErrorListener import ErrorListener
 
-DEBUG_VISITS = True
+DEBUG_VISITS = False
 VISIT_DEPTH = 0
 
 def debug_visit(func):

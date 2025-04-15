@@ -24,8 +24,6 @@ class CodeGenVisitor(gVisitor):
             return self.visit(ctx.expr())
         elif ctx.delaration():
             return self.visit(ctx.delaration())
-        else:
-            return None
 
     @debug_visit
     def visitDelaration(self, ctx):

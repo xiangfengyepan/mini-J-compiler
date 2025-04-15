@@ -6,18 +6,27 @@ from CodeGenVisitor import CodeGenVisitor
 from utils import MyErrorListener
 
 def main():
-    if len(sys.argv) != 2:
-        print("Ús: python3 g.py programa.j")
+    args = sys.argv[1:]
+
+    if not args:
+        print("Usage: python3 g.py program.j [--test]")
         return
 
-    file_name = sys.argv[1]
+    # Check if --test is passed and extract the input file name
+    is_test = "--test" in args
+    file_name = next((arg for arg in args if not arg.startswith("--")), None)
+
+    if not file_name:
+        print("Error: no input file specified.")
+        return
+
     with open(file_name, 'r') as file:
         input_stream = InputStream(file.read())
 
     lexer = gLexer(input_stream)
     stream = CommonTokenStream(lexer)
 
-    # Crea y añade el listener
+    # Custom error listener
     error_listener = MyErrorListener()
     lexer.removeErrorListeners()
     lexer.addErrorListener(error_listener)
@@ -29,22 +38,25 @@ def main():
     tree = parser.program()
 
     if error_listener.hay_error:
-        print("→ Lexical erros founded. Aborting program execution.")
+        print("→ Lexical errors detected. Aborting program execution.")
         return
 
     visitor = CodeGenVisitor()
     results = visitor.visit(tree)
 
-    CYAN = "\033[96m"
-    RESET = "\033[0m"
-    BOLD = "\033[1m"
+    
+    filtered_output = "\n".join(str(r) for r in results if r is not None)
 
-    print()
-    print("📦 CodeGen Visitor Results")
-    print(f"{CYAN}==========================={RESET}")
-
-    print("\n".join(map(str, results)))
-
+    if is_test:
+        with open(f"{file_name}.out", "w") as out_file:
+            out_file.write(filtered_output)
+    else:
+        CYAN = "\033[96m"
+        RESET = "\033[0m"
+        print()
+        print("📦 CodeGen Visitor Results")
+        print(f"{CYAN}==========================={RESET}")
+        print(filtered_output)
 
 if __name__ == '__main__':
     main()
