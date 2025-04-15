@@ -1,7 +1,8 @@
-# Variable global per activar/desactivar el debug
+
+from antlr4.error.ErrorListener import ErrorListener
+
 DEBUG_VISITS = True
 
-# Decorador per imprimir entrada i sortida dels mètodes
 def debug_visit(func):
     def wrapper(self, ctx):
         if DEBUG_VISITS:
@@ -11,3 +12,13 @@ def debug_visit(func):
             print(f"← Sortint de {func.__name__}: {result}")
         return result
     return wrapper
+
+class MyErrorListener(ErrorListener):
+    def __init__(self):
+        super(MyErrorListener, self).__init__()
+        self.hay_error = False
+
+    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+        self.hay_error = True
+        print(f"Error línia {line}, columna {column}: {msg}")
+
