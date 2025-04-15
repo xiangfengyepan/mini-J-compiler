@@ -1,3 +1,5 @@
+import numpy as np
+
 from gVisitor import gVisitor
 from utils import debug_visit
 
@@ -64,24 +66,25 @@ class GVisitorImpl(gVisitor):
 
     @debug_visit
     def visitValue(self, ctx):
-        if (ctx.INTVAL()):
-            return int(ctx.INTVAL().getText())
-        if (ctx.FLOATVAL()):
-            return float(ctx.FLOATVAL().getText())
+        if ctx.INTVAL():
+            return np.int64(ctx.INTVAL().getText())
+        if ctx.FLOATVAL():
+            return np.float64(ctx.FLOATVAL().getText())
 
     @debug_visit
     def visitAritmetic(self, ctx):
         lhs = self.visit(ctx.expr(0))
         rhs = self.visit(ctx.expr(1))
         op = ctx.op.text
+
         if op == '*':
-            return lhs * rhs
+            return np.multiply(lhs, rhs)
         elif op == '/':
-            return lhs / rhs
+            return np.divide(lhs, rhs)
         elif op == '+':
-            return lhs + rhs
+            return np.add(lhs, rhs)
         elif op == '-':
-            return lhs - rhs
+            return np.subtract(lhs, rhs)
 
     @debug_visit
     def visitLogical(self, ctx):
