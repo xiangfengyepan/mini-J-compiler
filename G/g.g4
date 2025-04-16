@@ -1,14 +1,13 @@
 grammar g;
 
-program: statement+;
+program: (statement NEWLINE*)* EOF;
 
 statement
-    : expr NEWLINE
+    : expr
     | declaration
-    | NEWLINE
     ;
 
-declaration: ID ASSIGN expr NEWLINE;
+declaration: ID ASSIGN expr;
 
 expr
     : '(' expr ')'                          # parent
@@ -59,4 +58,5 @@ NEWLINE : '\r'? '\n' ;
 COMMENT: 'NB.' ~[\r\n]* -> skip;
 
 WS        : [ \t\r]+ -> skip ;    
+
 

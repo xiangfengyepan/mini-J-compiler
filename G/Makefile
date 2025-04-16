@@ -23,6 +23,9 @@ venv:
 run: all
 	. venv/bin/activate && python3 g.py ../tests/programa.j
 
+debug: all
+	. venv/bin/activate && python3 g.py --debug ../tests/programa.j
+
 test: all
 	. venv/bin/activate && python3 g.py --test ../tests/programa.j
 

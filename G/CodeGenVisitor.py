@@ -10,7 +10,10 @@ class CodeGenVisitor(gVisitor):
 
     @debug_visit
     def visitProgram(self, ctx):
-        results = [self.visit(child)  for child in ctx.statement()]
+        for child in ctx.statement():
+            self.visit(child)
+        
+        results = [self.visit(child) if not child.declaration() else None for child in ctx.statement()]
         return results
 
     #######################
@@ -56,17 +59,17 @@ class CodeGenVisitor(gVisitor):
         rhs = self.visit(ctx.expr(1))
 
         if ctx.EQUAL():
-            return np.equal(lhs, rhs).astype(int)
+            return np.equal(lhs, rhs).astype(np.int32)
         elif ctx.NE():
-            return np.not_equal(lhs, rhs).astype(int)
+            return np.not_equal(lhs, rhs).astype(np.int32)
         elif ctx.LT():
-            return np.less(lhs, rhs).astype(int)
+            return np.less(lhs, rhs).astype(np.int32)
         elif ctx.GT():
-            return np.greater(lhs, rhs).astype(int)
+            return np.greater(lhs, rhs).astype(np.int32)
         elif ctx.LE():
-            return np.less_equal(lhs, rhs).astype(int)
+            return np.less_equal(lhs, rhs).astype(np.int32)
         elif ctx.GE():
-            return np.greater_equal(lhs, rhs).astype(int)
+            return np.greater_equal(lhs, rhs).astype(np.int32)
 
     @debug_visit
     def visitUnary(self, ctx):
@@ -74,7 +77,7 @@ class CodeGenVisitor(gVisitor):
         if ctx.NEG():
             return -value
         elif ctx.NOT():
-            return np.logical_not(value).astype(int)
+            return np.logical_not(value).astype(np.int32)
         return
 
     @debug_visit
@@ -116,7 +119,7 @@ class CodeGenVisitor(gVisitor):
         lhs = self.visit(ctx.expr(0))
         rhs = self.visit(ctx.expr(1))
         if ctx.AND():
-            return np.logical_and(lhs, rhs)
+            return np.logical_and(lhs, rhs).astype(np.int32)
         elif ctx.OR():
-            return np.logical_or(lhs, rhs)
+            return np.logical_or(lhs, rhs).astype(np.int32)
         return

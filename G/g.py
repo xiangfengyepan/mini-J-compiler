@@ -1,9 +1,10 @@
 import sys, os
+import numpy as np
 from antlr4 import *
 from gLexer import gLexer
 from gParser import gParser
 from CodeGenVisitor import CodeGenVisitor
-from utils import MyErrorListener
+from utils import DebugConfig, MyErrorListener
 
 def main():
     args = sys.argv[1:]
@@ -12,8 +13,9 @@ def main():
         print("Usage: python3 g.py program.j [--test]")
         return
 
-    # Check if --test is passed and extract the input file name
     is_test = "--test" in args
+    is_debug = "--debug" in args
+
     file_name = next((arg for arg in args if not arg.startswith("--")), None)
 
     if not file_name:
@@ -41,23 +43,44 @@ def main():
         print("→ Lexical errors detected. Aborting program execution.")
         return
 
+    DebugConfig.set_debug_visits(is_debug)
     visitor = CodeGenVisitor()
     results = visitor.visit(tree)
 
-
-    filtered_output = "\n".join(str(r) for r in results if r is not None)
+    filtered_output = [r for r in results if r is not None]
 
     if is_test:
         base_name = os.path.splitext(file_name)[0]
-        with open(f"{base_name}.out", "w") as out_file:
-            out_file.write(filtered_output)
+        my_write(filtered_output, f"{base_name}.out")
     else:
         CYAN = "\033[96m"
         RESET = "\033[0m"
         print()
         print("📦 CodeGen Visitor Results")
         print(f"{CYAN}==========================={RESET}")
-        print(filtered_output)
+        my_print(filtered_output)
+
+
+def format_element(elem):
+    if isinstance(elem, np.int32):
+        return f"_{abs(elem)}" if elem < 0 else str(elem)
+    elif isinstance(elem, np.ndarray):
+        return " ".join(format_element(e) for e in elem)
+    return None
+
+
+def my_print(output_list):
+    for elem in output_list:
+        if format_element(elem):
+            print(format_element(elem))
+
+def my_write(output_list, file_path):
+    with open(file_path, "w") as f:
+        for item in output_list:
+            if format_element(item):
+                f.write(format_element(item) + '\n')
+
+
 
 if __name__ == '__main__':
     main()
