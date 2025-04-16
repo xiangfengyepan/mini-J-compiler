@@ -1,7 +1,16 @@
 import numpy as np
 
 from gVisitor import gVisitor
+from gParser import gParser
 from utils import debug_visit
+
+class MyParser:
+    func_names = ["b"]
+
+    def isFuncName(self):
+        return False 
+        
+    gParser.isFuncName = isFuncName
 
 class CodeGenVisitor(gVisitor):
     def __init__(self):
@@ -47,12 +56,15 @@ class CodeGenVisitor(gVisitor):
 
     @debug_visit
     def visitFuncCall(self, ctx):
-        # TODO
+        name = self.visit(ctx.ID())
+        code = self.visit(ctx.expr())
+
         return
 
     @debug_visit
     def visitVariable(self, ctx):
         var = self.variables[ctx.ID().getText()]
+
         return var
 
     @debug_visit
@@ -111,23 +123,23 @@ class CodeGenVisitor(gVisitor):
             rhs = aux
 
         try:
-            if ctx.MUL() or ctx.MULD():
+            if ctx.MUL():
                 return np.multiply(lhs, rhs)
-            elif ctx.DIV() or ctx.DIVD():
+            elif ctx.DIV():
                 return np.floor_divide(lhs, rhs)    # divisio entera
-            elif ctx.PLUS() or ctx.PLUSD():
+            elif ctx.PLUS():
                 return np.add(lhs, rhs)
-            elif ctx.MINUS() or ctx.MINUSD():
+            elif ctx.MINUS():
                 return np.subtract(lhs, rhs)
-            elif ctx.POW() or ctx.POWD():
+            elif ctx.POW():
                 return np.power(lhs, rhs)
-            elif ctx.MOD() or ctx.MODD():
+            elif ctx.MOD():
                 return np.mod(rhs, lhs)             # els operands van al reves
-            elif ctx.CONCATE() or ctx.CONCATED():
+            elif ctx.CONCATE():
                 return np.concatenate((np.atleast_1d(lhs), np.atleast_1d(rhs)))
-            elif ctx.HASH() or ctx.HASHD():
+            elif ctx.HASH():
                 return np.array(rhs)[np.array(lhs, dtype=bool)]
-            elif ctx.INDEX() or ctx.INDEXD():
+            elif ctx.INDEX():
                 return np.array(rhs)[np.array(lhs)]
 
         except Exception as e:

@@ -11,8 +11,8 @@ declaration: ID ASSIGN expr;
 
 expr
     : '(' expr ')'                                  # parent
+    | {self.isFuncName()}? ID  expr                 # funcCall
     | ID                                            # variable
-    | ID expr+                                      # funcCall
 
     | op=(IDENTITY|HASH|ARANGE) expr                # unary
     | op=(NEG|PLUS)  expr                           # unary
@@ -21,9 +21,9 @@ expr
     | expr op=(MUL|DIV|POW|MOD) FLIP? expr          # aritmetic
     | expr op=(PLUS|MINUS) FLIP? expr               # aritmetic
 
-    | op=(CONCATED|HASHD|INDEXD) expr               # aritmetic
-    | op=(MULD|DIVD|POWD|MODD) expr                 # aritmetic
-    | op=(PLUSD|MINUSD) expr                        # aritmetic
+    | op=(CONCATE|HASH|INDEX) DOUBLE expr           # aritmetic
+    | op=(MUL|DIV|POW|MOD) DOUBLE expr              # aritmetic
+    | op=(PLUS|MINUS) DOUBLE expr                   # aritmetic
 
     | op=(CONCATE|HASH|INDEX) FOLD expr             # fold
     | op=(MUL|DIV|POW|MOD) FOLD expr                # fold
@@ -59,15 +59,7 @@ ARANGE      : 'i.';
 FOLD        : '/'; 
 FLIP        : '~';
 
-PLUSD        : '+:';
-MINUSD       : '-:';
-MULD         : '*:';
-DIVD         : '/:';
-POWD         : '^:';
-MODD         : '%:';
-CONCATED     : ',:';
-HASHD        : '#:';
-INDEXD       : '@:';
+DOUBLE      : ':';
 
 INTVAL    : ('0'..'9')+ ;
 // FLOATVAL  : ('0'..'9')+ '.' ('0'..'9')+ ;
