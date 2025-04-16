@@ -10,10 +10,12 @@ class CodeGenVisitor(gVisitor):
 
     @debug_visit
     def visitProgram(self, ctx):
+        results = []
         for child in ctx.statement():
-            self.visit(child)
+            value = self.visit(child)
+            if not child.declaration():
+               results.append(value)     
         
-        results = [self.visit(child) if not child.declaration() else None for child in ctx.statement()]
         return results
 
     #######################

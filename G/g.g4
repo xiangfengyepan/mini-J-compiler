@@ -31,7 +31,6 @@ expr
 
     | expr op=(EQUAL|NE|LT|GT|LE|GE) expr           # relational
     | INTVAL+                                       # value
-    | INTVAL                                        # value
     // | FLOATVAL+                                  # value
     ;
 

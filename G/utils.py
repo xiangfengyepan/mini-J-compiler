@@ -22,17 +22,21 @@ def debug_visit(func):
             stop_idx = ctx.stop.tokenIndex if ctx.stop else start_idx
             tokens = token_stream.getTokens(start_idx, stop_idx + 1)
             token_text = ' '.join(f"{BLUE}{t.text}{RESET}" for t in tokens if t.text is not None)
-            print(f"{indent}{GREEN}→ Entrant a {func.__name__}:{RESET} {token_text}")
+
+            start_line = ctx.start.line  # Get the starting line number
+            print(f"{indent}{GREEN}→ Entrant a {func.__name__} (Line {start_line}):{RESET} {token_text}")
 
         DebugConfig.visit_depth += 1
         result = func(self, ctx)
         DebugConfig.visit_depth -= 1
 
         if DebugConfig.visits_enabled:
-            print(f"{indent}{RED}← Sortint de {func.__name__}:{RESET} {result}")
+            stop_line = ctx.stop.line if ctx.stop else start_line  # Get the stop line number, or use start line if stop is None
+            print(f"{indent}{RED}← Sortint de {func.__name__} (Line {stop_line}):{RESET} {result}")
         return result
 
     return wrapper
+
 
 class MyErrorListener(ErrorListener):
     def __init__(self):
