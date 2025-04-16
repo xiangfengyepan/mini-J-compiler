@@ -70,15 +70,12 @@ def format_element(elem):
 
 
 def my_print(output_list):
-    for elem in output_list:
-        if format_element(elem):
-            print(format_element(elem))
+    [print(format_element(elem)) for elem in output_list if format_element(elem) is not None]
 
 def my_write(output_list, file_path):
     with open(file_path, "w") as f:
-        for item in output_list:
-            if format_element(item):
-                f.write(format_element(item) + '\n')
+        [f.write(format_element(item) + '\n') for item in output_list if format_element(item) is not None]
+
 
 
 

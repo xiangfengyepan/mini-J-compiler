@@ -1,17 +1,8 @@
-[1 2 3]
-[1 1 1]
-[2 3 4]
-[2 3 4]
-error: operands could not be broadcast together with shapes (2,) (3,) 
+1 2 3
+1 1 1
+2 3 4
+2 3 4
 11
 13
 16
-[-2 -3]
-[1 2 3]
-[1 1 1]
-[2 3 4]
-[2 3 4]
-error: operands could not be broadcast together with shapes (2,) (3,) 
-11
-13
-16
+_2 _3

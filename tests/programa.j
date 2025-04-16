@@ -1,16 +1,19 @@
-a =: 3 > 2         NB. results: 1     
-b =: 3 < 2          NB. results: 0     
-c =: 3 >= 3         NB. results: 1
-d =: 2 <= 1         NB. results: 0
-e =: 4 = 4          NB. results: 1
-f =: 5 <> 4         NB. results: 1
-g =: 5 <> 5         NB. results: 0
+a =: ] 1    NB. resultat: 1
+b =: 1 , 2 3    NB. resultat: 1 2 3
+c =: # 1 2    NB. resultat: 2
+d =: 1 0 1 0 # 1 2 3 4    NB. resultat: 1 3
+e =: 0 2 { 2 3 4   NB. resultat: 2 4
+f =: i. 4    NB. resultat: 0 1 2 3
+g =: +: 1 2 3    NB. resultat: 2 4 6
+h =: + / 1 2 3    NB. resultat: 6
+i =: 7 | ~ 2    NB. resultat: 1
 
-NB. print results
 a
-b
-c 
+b 
+c
 d
-e 
+e
 f
 g
+h
+i

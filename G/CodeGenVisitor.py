@@ -75,10 +75,13 @@ class CodeGenVisitor(gVisitor):
     def visitUnary(self, ctx):
         value = self.visit(ctx.expr())
         if ctx.NEG():
-            return -value
-        elif ctx.NOT():
-            return np.logical_not(value).astype(np.int32)
-        return
+            value = -value
+        elif ctx.HASH():
+            value = np.int32(np.atleast_1d(value).size)
+        elif ctx.ARANGE():
+            value = np.int32(np.arange(value))
+
+        return value
 
     @debug_visit
     def visitValue(self, ctx):
@@ -94,32 +97,58 @@ class CodeGenVisitor(gVisitor):
 
     @debug_visit
     def visitAritmetic(self, ctx):
-        lhs = self.visit(ctx.expr(0))
-        rhs = self.visit(ctx.expr(1))
+        lhs = self.visit(ctx.expr(0)) if ctx.expr(0) else None
+        rhs = self.visit(ctx.expr(1)) if ctx.expr(1) else None
+
+        if rhs is None:
+            rhs = lhs
+
+        if ctx.FLIP():
+            aux = lhs
+            lhs = rhs
+            rhs = aux
 
         try:
-            if ctx.MUL():
+            if ctx.MUL() or ctx.MULD():
                 return np.multiply(lhs, rhs)
-            elif ctx.DIV():
+            elif ctx.DIV() or ctx.DIVD():
                 return np.floor_divide(lhs, rhs)    # divisio entera
-            elif ctx.PLUS():
+            elif ctx.PLUS() or ctx.PLUSD():
                 return np.add(lhs, rhs)
-            elif ctx.MINUS():
+            elif ctx.MINUS() or ctx.MINUSD():
                 return np.subtract(lhs, rhs)
-            elif ctx.POW():
+            elif ctx.POW() or ctx.POWD():
                 return np.power(lhs, rhs)
-            elif ctx.MOD():
+            elif ctx.MOD() or ctx.MODD():
                 return np.mod(rhs, lhs)             # els operands van al reves
+            elif ctx.CONCATE() or ctx.CONCATED():
+                return np.concatenate((np.atleast_1d(lhs), np.atleast_1d(rhs)))
+            elif ctx.HASH() or ctx.HASHD():
+                return np.array(rhs)[np.array(lhs, dtype=bool)]
+            elif ctx.INDEX() or ctx.INDEXD():
+                return np.array(rhs)[np.array(lhs)]
+
         except Exception as e:
             return f"error: {str(e)}"
-
-
+    
     @debug_visit
-    def visitLogical(self, ctx):
-        lhs = self.visit(ctx.expr(0))
-        rhs = self.visit(ctx.expr(1))
-        if ctx.AND():
-            return np.logical_and(lhs, rhs).astype(np.int32)
-        elif ctx.OR():
-            return np.logical_or(lhs, rhs).astype(np.int32)
-        return
+    def visitFold(self, ctx):
+        value = self.visit(ctx.expr())
+        try:
+            if ctx.MUL():
+                return np.multiply.reduce(value).astype(np.int32)
+            elif ctx.DIV():
+                return np.floor_divide.reduce(value).astype(np.int32)    # divisio entera
+            elif ctx.PLUS():
+                return np.add.reduce(value).astype(np.int32)
+            elif ctx.MINUS():
+                return np.subtract.reduce(value).astype(np.int32)
+            elif ctx.POW():
+                return np.power.reduce(value).astype(np.int32)
+            elif ctx.MOD():
+                return np.mod.reduce(value).astype(np.int32)             # els operands van al reves
+            elif ctx.CONCATE():
+                return np.array(value)
+
+        except Exception as e:
+            return f"error: {str(e)}"

@@ -1,8 +1,12 @@
 #!/bin/bash
 
-
 INPUT_DIR="../tests/basics/"
 JCONSOLE_PATH="/opt/j9.6/bin/jconsole"
+
+for jfile in "${INPUT_DIR}"*.j; do
+    echo "Converting 2 LF: $jfile"
+    dos2unix "$jfile"
+done
 
 for jfile in "${INPUT_DIR}"*.j; do
     echo "Processing solve: $jfile -> $output_file"

@@ -19,8 +19,8 @@ def debug_visit(func):
         if DebugConfig.visits_enabled:
             token_stream = ctx.parser.getTokenStream()
             start_idx = ctx.start.tokenIndex
-            stop_idx = ctx.stop.tokenIndex
-            tokens = token_stream.getTokens(start_idx, stop_idx)
+            stop_idx = ctx.stop.tokenIndex if ctx.stop else start_idx
+            tokens = token_stream.getTokens(start_idx, stop_idx + 1)
             token_text = ' '.join(f"{BLUE}{t.text}{RESET}" for t in tokens if t.text is not None)
             print(f"{indent}{GREEN}→ Entrant a {func.__name__}:{RESET} {token_text}")
 
