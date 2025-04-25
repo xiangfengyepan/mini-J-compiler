@@ -10,7 +10,7 @@ statement
 declaration: ID ASSIGN expr;
 
 expr
-    : '(' expr ')'                                  # parent
+    : LPAREN expr RPAREN                            # parent
     | {self.isFuncName()}? ID  expr                 # funcCall
     | ID                                            # variable
 
@@ -32,6 +32,9 @@ expr
     | expr op=(EQUAL|NE|LT|GT|LE|GE) expr           # relational
     | INTVAL+                                       # value
     ;
+
+LPAREN: '(' ;
+RPAREN: ')' ;
 
 ASSIGN      : '=:' ;
 EQUAL       : '=' ;

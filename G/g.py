@@ -44,7 +44,7 @@ def main():
             CYAN = "\033[96m"
             RESET = "\033[0m"
             print()
-            print("📦 CodeGen Visitor Results")
+            print("CodeGen Visitor Results")
             print(f"{CYAN}==========================={RESET}")
         my_print(filtered_output)
             
@@ -59,9 +59,14 @@ def antlr(visitor, input_stream, is_debug):
     lexer = gLexer(input_stream)
     lexer.removeErrorListeners()
     
-    # print(lexer.getTokenNames())
-    print("lexical error found :(")
-    # return
+    tokens = lexer.getAllTokens()
+    # for token in tokens:
+    #     token_type = token.type
+    #     token_name = lexer.symbolicNames[token_type]
+    #     print(f"{token_name}: '{token.text}' (type={token_type})")
+
+    if lexer.symbolicNames.index("LEXICAL_ERROR") in [token.type for token in tokens]:
+        print("lexical error found :(")
 
     token_stream = CommonTokenStream(lexer)
 

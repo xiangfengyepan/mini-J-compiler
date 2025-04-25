@@ -46,4 +46,3 @@ class MyErrorListener(ErrorListener):
     def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
         self.hay_error = True
         print(f"Error en la linia {line}, columna {column}: {msg}")
-
