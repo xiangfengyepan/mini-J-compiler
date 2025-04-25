@@ -26,6 +26,7 @@ def main():
         input_stream = InputStream(file.read())
 
     lexer = gLexer(input_stream)
+    lexer.removeErrorListeners()
     stream = CommonTokenStream(lexer)
 
     # Custom error listener

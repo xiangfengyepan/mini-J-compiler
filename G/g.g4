@@ -73,6 +73,8 @@ NEWLINE : '\r'? '\n' ;
 
 COMMENT: 'NB.' ~[\r\n]* -> skip;
 
-WS        : [ \t\r]+ -> skip ;    
+WS        : [ \t\r]+ -> skip ;   
+
+LEXICAL_ERROR : . ;
 
 
