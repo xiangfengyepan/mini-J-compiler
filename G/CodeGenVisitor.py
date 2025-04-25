@@ -101,12 +101,8 @@ class CodeGenVisitor(gVisitor):
     def visitValue(self, ctx):
         if ctx.INTVAL() and len(ctx.INTVAL()) == 1:
             return np.int32(ctx.INTVAL(0).getText())
-        # elif ctx.FLOATVAL() and len(ctx.FLOATVAL()) == 1:
-        #     return np.float64(ctx.FLOATVAL(0).getText())
         elif ctx.INTVAL() and len(ctx.INTVAL()) > 1:
             return np.array([elem.getText() for elem in ctx.INTVAL()], dtype=np.int32)
-        # elif ctx.FLOATVAL() and len(ctx.FLOATVAL()) > 1:
-        #     return np.array([elem.getText() for elem in ctx.FLOATVAL()], dtype=np.float64)
 
 
     @debug_visit

@@ -31,7 +31,6 @@ expr
 
     | expr op=(EQUAL|NE|LT|GT|LE|GE) expr           # relational
     | INTVAL+                                       # value
-    // | FLOATVAL+                                  # value
     ;
 
 ASSIGN      : '=:' ;
@@ -62,7 +61,6 @@ FLIP        : '~';
 DOUBLE      : ':';
 
 INTVAL    : ('0'..'9')+ ;
-// FLOATVAL  : ('0'..'9')+ '.' ('0'..'9')+ ;
 ID        : ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
 
 // Strings (in quotes) with escape sequences
