@@ -30,7 +30,6 @@ for jfile in "${INPUT_DIR}"*.j; do
 done
 
 for jfile in "${INPUT_DIR}"*.j; do
-
     base_name=$(basename "$jfile" .j)
 
     output_file="${INPUT_DIR}${base_name}.out"

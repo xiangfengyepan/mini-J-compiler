@@ -48,11 +48,7 @@ def main():
             base_name = os.path.splitext(file_name)[0]
             MyPrinter.my_write(filtered_output, f"{base_name}.out")
         elif not is_interactive:
-            CYAN = "\033[96m"
-            RESET = "\033[0m"
-            print()
-            print("CodeGen Visitor Results")
-            print(f"{CYAN}==========================={RESET}")
+            MyPrinter.show_title()
             
         if filtered_output is not None:
             MyPrinter.my_print(filtered_output)

@@ -62,3 +62,14 @@ class MyPrinter:
             [f.write(MyPrinter.format_element(item) + '\n') for item in output_list if MyPrinter.format_element(item) is not None]
 
 
+    def show_title():
+        CYAN = "\033[96m"
+        RESET = "\033[0m"
+        print()
+        print("CodeGen Visitor Results")
+        print(f"{CYAN}==========================={RESET}")
+            
+
+
+
+

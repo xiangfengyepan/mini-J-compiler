@@ -27,7 +27,7 @@ runfile: antlr
 	. venv/bin/activate && python3 g.py $(FILE) $(ARGS)
 
 run: antlr
-	. venv/bin/activate && python3 g.py ../tests/programa.j $(ARGS) 
+	. venv/bin/activate && python3 g.py ../tests/programa.j $(ARGS)
 
 
 .PHONY: venv

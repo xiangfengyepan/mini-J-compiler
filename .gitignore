@@ -7,7 +7,7 @@ G/gLexer*
 G/gParser*
 G/gListener*
 G/gVisitor.py
-tests/
-j9.6
+tests/*
+j9.6/*
 
 
