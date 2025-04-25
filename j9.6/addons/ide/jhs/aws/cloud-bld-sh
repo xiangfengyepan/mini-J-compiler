@@ -1,0 +1,40 @@
+#!/bin/bash
+# $1 is jversion - j9.4 or j9.5 ...
+# avoid .suffix so git/pacman preserve eol lf on windows
+
+# install j
+rm $1_linux64.tar.gz
+wget -nv www.jsoftware.com/download/$1/install/$1_linux64.tar.gz
+tar -zxf $1_linux64.tar.gz
+
+# update j - mkdir Desktop so install icons don't fail
+ln -s -f $1/bin/jconsole jc
+./jc -js "mkdir_j_'Desktop'" "load'pacman'" "'install'jpkg'*'" "exit''"
+ln -s -f $1/addons/ide/jhs/guest/guest_util.ijs guest_util.ijs
+
+# put default self-signed certificates in .ssh
+sudo cp $1/addons/ide/jhs/node/key.pem  .ssh
+sudo cp $1/addons/ide/jhs/node/cert.pem .ssh
+sudo chmod 600 .ssh/key.pem
+sudo chown ec2-user:ec2-user .ssh/key.pem
+sudo chmod 600 .ssh/cert.pem
+sudo chown ec2-user:ec2-user .ssh/cert.pem
+
+# create .ssh/jserver for letsencrypt
+sudo mkdir -p .ssh/jserver
+sudo chmod 700 .ssh/jserver
+sudo chown $1:$1 .ssh/jserver
+
+# install nodejs
+sudo yum -y install nodejs
+echo `which node` > nodebin
+
+# python3 already installed but we also need pip3
+sudo yum -y install python3-pip
+
+# install certbot - letsencrypt
+sudo dnf install -y augeas-libs
+sudo python3 -m venv /opt/certbot/
+sudo /opt/certbot/bin/pip install --upgrade pip
+sudo /opt/certbot/bin/pip install certbot certbot-apache
+sudo ln -s -f /opt/certbot/bin/certbot /usr/bin/certbot
