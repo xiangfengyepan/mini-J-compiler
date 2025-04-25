@@ -23,17 +23,11 @@ venv:
 	python3 -m venv venv
 	. venv/bin/activate && pip install --upgrade pip && pip install antlr4-python3-runtime==4.13.2 numpy
 
-ia: antlr
-	. venv/bin/activate && python3 g.py --ia
+runfile: antlr
+	. venv/bin/activate && python3 g.py $(FILE) $(ARGS)
 
 run: antlr
-	. venv/bin/activate && python3 g.py ../tests/programa.j
-
-debug: antlr
-	. venv/bin/activate && python3 g.py --debug ../tests/programa.j
-
-test: antlr
-	. venv/bin/activate && python3 g.py --test ../tests/programa.j
+	. venv/bin/activate && python3 g.py ../tests/programa.j $(ARGS) 
 
 
 .PHONY: venv

@@ -31,8 +31,6 @@ def main():
     filtered_output = None
     visitor = CodeGenVisitor()
     while is_interactive or not filtered_output:
-        
-        
         filtered_output = antlr(visitor, input_stream, is_debug)
         if not filtered_output:
             return
@@ -59,17 +57,21 @@ def antlr(visitor, input_stream, is_debug):
     lexer = gLexer(input_stream)
     lexer.removeErrorListeners()
     
-    tokens = lexer.getAllTokens()
-    # for token in tokens:
-    #     token_type = token.type
-    #     token_name = lexer.symbolicNames[token_type]
-    #     print(f"{token_name}: '{token.text}' (type={token_type})")
-
-    if lexer.symbolicNames.index("LEXICAL_ERROR") in [token.type for token in tokens]:
-        print("lexical error found :(")
-
     token_stream = CommonTokenStream(lexer)
+    token_stream.fill()
+    tokens = token_stream.tokens
 
+    lexical_errors = []
+    for token in tokens:
+        if token.type == lexer.LEXICAL_ERROR:
+            lexical_errors.append(token)
+
+    if lexical_errors:
+        for error in lexical_errors:
+            print(f"Lexical error found: '{error.text}' at line {error.line}, column {error.column}")
+        print("Aborting execution due to lexical errors.")
+        return
+        
     parser = gParser(token_stream)
     parser.removeErrorListeners()
     parser.addErrorListener(error_listener)
@@ -83,7 +85,7 @@ def antlr(visitor, input_stream, is_debug):
         results = visitor.visit(tree)
         filtered_output = [r for r in results if r is not None]
     else:
-        print(parser.getNumberOfSyntaxErrors(), 'errors de sintaxi.')
+        print(parser.getNumberOfSyntaxErrors(), 'sintax error')
         print(tree.toStringTree(recog=parser))
   
     return filtered_output
