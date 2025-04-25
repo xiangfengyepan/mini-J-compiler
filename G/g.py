@@ -29,26 +29,27 @@ def main():
             input_stream = InputStream(file.read())
     
     filtered_output = None
+    visitor = CodeGenVisitor()
     while is_interactive or not filtered_output:
-        filtered_output = antlr(input_stream, is_debug)
+        filtered_output = antlr(visitor, input_stream, is_debug)
 
         if is_test:
             base_name = os.path.splitext(file_name)[0]
             my_write(filtered_output, f"{base_name}.out")
-        else:
+        elif not is_interactive:
             CYAN = "\033[96m"
             RESET = "\033[0m"
             print()
             print("📦 CodeGen Visitor Results")
             print(f"{CYAN}==========================={RESET}")
-            my_print(filtered_output)
+        my_print(filtered_output)
             
         if is_interactive:
             input_stream = InputStream(input('? '))
              
         
 
-def antlr(input_stream, is_debug):
+def antlr(visitor, input_stream, is_debug):
     lexer = gLexer(input_stream)
     lexer.removeErrorListeners()
     stream = CommonTokenStream(lexer)
@@ -69,7 +70,7 @@ def antlr(input_stream, is_debug):
         return
 
     DebugConfig.set_debug_visits(is_debug)
-    visitor = CodeGenVisitor()
+    
     results = visitor.visit(tree)
 
     filtered_output = [r for r in results if r is not None]
