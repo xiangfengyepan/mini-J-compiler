@@ -65,7 +65,7 @@ class CodeGenVisitor(gVisitor):
     @debug_visit
     def visitVariable(self, ctx):
         var = self.variables[ctx.ID().getText()]
-
+        # var = self.variables.get(ctx.ID().getText())
         return var
 
     @debug_visit

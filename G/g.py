@@ -32,7 +32,7 @@ def main():
     visitor = CodeGenVisitor()
     while is_interactive or not filtered_output:
         filtered_output = antlr(visitor, input_stream, is_debug)
-        if not filtered_output:
+        if filtered_output is None:
             return
         
         if is_test:
