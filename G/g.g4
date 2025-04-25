@@ -75,6 +75,6 @@ COMMENT: 'NB.' ~[\r\n]* -> skip;
 
 WS        : [ \t\r]+ -> skip ;   
 
-LEXICAL_ERROR : . ;
+LEXICAL_ERROR: . ;
 
 

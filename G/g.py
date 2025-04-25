@@ -31,8 +31,12 @@ def main():
     filtered_output = None
     visitor = CodeGenVisitor()
     while is_interactive or not filtered_output:
+        
+        
         filtered_output = antlr(visitor, input_stream, is_debug)
-
+        if not filtered_output:
+            return
+        
         if is_test:
             base_name = os.path.splitext(file_name)[0]
             my_write(filtered_output, f"{base_name}.out")
@@ -50,30 +54,33 @@ def main():
         
 
 def antlr(visitor, input_stream, is_debug):
+    error_listener = MyErrorListener()
+    
     lexer = gLexer(input_stream)
     lexer.removeErrorListeners()
-    stream = CommonTokenStream(lexer)
+    
+    # print(lexer.getTokenNames())
+    print("lexical error found :(")
+    # return
 
-    # Custom error listener
-    error_listener = MyErrorListener()
-    lexer.removeErrorListeners()
-    lexer.addErrorListener(error_listener)
+    token_stream = CommonTokenStream(lexer)
 
-    parser = gParser(stream)
+    parser = gParser(token_stream)
     parser.removeErrorListeners()
     parser.addErrorListener(error_listener)
 
     tree = parser.program()
 
-    if error_listener.hay_error:
-        print("→ Lexical errors detected. Aborting program execution.")
-        return
-
     DebugConfig.set_debug_visits(is_debug)
     
-    results = visitor.visit(tree)
-
-    filtered_output = [r for r in results if r is not None]
+    filtered_output = None
+    if parser.getNumberOfSyntaxErrors() == 0:
+        results = visitor.visit(tree)
+        filtered_output = [r for r in results if r is not None]
+    else:
+        print(parser.getNumberOfSyntaxErrors(), 'errors de sintaxi.')
+        print(tree.toStringTree(recog=parser))
+  
     return filtered_output
 
 def format_element(elem):

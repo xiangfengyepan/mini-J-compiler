@@ -101,7 +101,7 @@ class CodeGenVisitor(gVisitor):
     @debug_visit
     def visitValue(self, ctx):
         if ctx.INTVAL() and len(ctx.INTVAL()) == 1:
-            print("  " * self.nivell + ctx.INTVAL(0).getText())
+            # print("  " * self.nivell + ctx.INTVAL(0).getText()) # TODO print Tree
             return np.int32(ctx.INTVAL(0).getText())
         elif ctx.INTVAL() and len(ctx.INTVAL()) > 1:
             return np.array([elem.getText() for elem in ctx.INTVAL()], dtype=np.int32)
@@ -109,7 +109,7 @@ class CodeGenVisitor(gVisitor):
 
     @debug_visit
     def visitAritmetic(self, ctx):
-        print('  ' *  self.nivell + '+')
+        # print('  ' *  self.nivell + '+') # TODO print Tree
         self.nivell += 1
         lhs = self.visit(ctx.expr(0)) if ctx.expr(0) else None
         rhs = self.visit(ctx.expr(1)) if ctx.expr(1) else None
