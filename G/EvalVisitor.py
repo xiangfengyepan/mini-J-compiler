@@ -1,22 +1,12 @@
 import numpy as np
 
 from gVisitor import gVisitor
-from gParser import gParser
 from utils import debug_visit
 
-class MyParser:
-    func_names = ["b"]
-    
-    def isFuncName(self):
-        return False 
-        
-    gParser.isFuncName = isFuncName
-
-class CodeGenVisitor(gVisitor):
+class EvalVisitor(gVisitor):
     def __init__(self):
         super().__init__()
         self.variables = {}
-        self.nivell = 0
 
     @debug_visit
     def visitProgram(self, ctx):
@@ -28,13 +18,8 @@ class CodeGenVisitor(gVisitor):
         
         return results
 
-    #######################
-    # Statements Visitors #
-    #######################
-
     @debug_visit
     def visitStatement(self, ctx):
-        # Statement can be either expr NEWLINE or declaration
         if ctx.expr():
             return self.visit(ctx.expr())
         elif ctx.declaration():
@@ -45,27 +30,15 @@ class CodeGenVisitor(gVisitor):
         name = ctx.ID().getText()
         value = self.visit(ctx.expr())
         self.variables[name] = value
-        return value
-
-    ##################
-    # Exprs Visitors #
-    ##################
+        return
 
     @debug_visit
     def visitParent(self, ctx):
         return self.visit(ctx.expr())
 
     @debug_visit
-    def visitFuncCall(self, ctx):
-        name = self.visit(ctx.ID())
-        code = self.visit(ctx.expr())
-
-        return
-
-    @debug_visit
     def visitVariable(self, ctx):
         var = self.variables[ctx.ID().getText()]
-        # var = self.variables.get(ctx.ID().getText())
         return var
 
     @debug_visit
@@ -101,7 +74,6 @@ class CodeGenVisitor(gVisitor):
     @debug_visit
     def visitValue(self, ctx):
         if ctx.INTVAL() and len(ctx.INTVAL()) == 1:
-            # print("  " * self.nivell + ctx.INTVAL(0).getText()) # TODO print Tree
             return np.int32(ctx.INTVAL(0).getText())
         elif ctx.INTVAL() and len(ctx.INTVAL()) > 1:
             return np.array([elem.getText() for elem in ctx.INTVAL()], dtype=np.int32)
@@ -109,11 +81,8 @@ class CodeGenVisitor(gVisitor):
 
     @debug_visit
     def visitAritmetic(self, ctx):
-        # print('  ' *  self.nivell + '+') # TODO print Tree
-        self.nivell += 1
         lhs = self.visit(ctx.expr(0)) if ctx.expr(0) else None
         rhs = self.visit(ctx.expr(1)) if ctx.expr(1) else None
-        self.nivell -= 1
 
         if rhs is None:
             rhs = lhs

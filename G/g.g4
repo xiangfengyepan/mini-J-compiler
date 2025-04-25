@@ -11,8 +11,6 @@ declaration: ID ASSIGN expr;
 
 expr
     : LPAREN expr RPAREN                            # parent
-    | {self.isFuncName()}? ID  expr                 # funcCall
-    | ID                                            # variable
 
     | op=(IDENTITY|HASH|ARANGE) expr                # unary
     | op=(NEG|PLUS)  expr                           # unary
@@ -31,6 +29,7 @@ expr
 
     | expr op=(EQUAL|NE|LT|GT|LE|GE) expr           # relational
     | INTVAL+                                       # value
+    | ID                                            # variable
     ;
 
 LPAREN: '(' ;

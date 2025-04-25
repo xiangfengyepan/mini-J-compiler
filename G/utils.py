@@ -1,4 +1,5 @@
 
+import numpy as np
 from antlr4.error.ErrorListener import ErrorListener
 class DebugConfig:
     visits_enabled = False
@@ -37,7 +38,6 @@ def debug_visit(func):
 
     return wrapper
 
-
 class MyErrorListener(ErrorListener):
     def __init__(self):
         super(MyErrorListener, self).__init__()
@@ -46,3 +46,19 @@ class MyErrorListener(ErrorListener):
     def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
         self.hay_error = True
         print(f"Error en la linia {line}, columna {column}: {msg}")
+
+class MyPrinter:
+    def format_element(elem):
+        if isinstance(elem, np.int32):
+            return f"_{abs(elem)}" if elem < 0 else str(elem)
+        elif isinstance(elem, np.ndarray):
+            return " ".join(MyPrinter.format_element(e) for e in elem)
+        return None
+    def my_print(output_list):
+        [print(MyPrinter.format_element(elem)) for elem in output_list if MyPrinter.format_element(elem) is not None]
+
+    def my_write(output_list, file_path):
+        with open(file_path, "w") as f:
+            [f.write(MyPrinter.format_element(item) + '\n') for item in output_list if MyPrinter.format_element(item) is not None]
+
+

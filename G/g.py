@@ -1,10 +1,11 @@
 import sys, os
-import numpy as np
 from antlr4 import *
 from gLexer import gLexer
 from gParser import gParser
-from CodeGenVisitor import CodeGenVisitor
-from utils import DebugConfig, MyErrorListener
+from EvalVisitor import EvalVisitor
+from TreeVisitor import TreeVisitor
+
+from utils import DebugConfig, MyErrorListener, MyPrinter
 
 def main():
     args = sys.argv[1:]
@@ -29,29 +30,39 @@ def main():
             input_stream = InputStream(file.read())
     
     filtered_output = None
-    visitor = CodeGenVisitor()
+    if not is_test:
+        treeVisitor = TreeVisitor()
+    evalVisitor = EvalVisitor()
+
     while is_interactive or not filtered_output:
-        filtered_output = antlr(visitor, input_stream, is_debug)
+        parser, tree = setPerserTree(input_stream)
+        
+        if not is_test:
+            visitParserTree(treeVisitor, parser, tree, is_debug)
+        filtered_output = visitParserTree(evalVisitor, parser, tree, is_debug)
+
         if filtered_output is None:
             return
         
         if is_test:
             base_name = os.path.splitext(file_name)[0]
-            my_write(filtered_output, f"{base_name}.out")
+            MyPrinter.my_write(filtered_output, f"{base_name}.out")
         elif not is_interactive:
             CYAN = "\033[96m"
             RESET = "\033[0m"
             print()
             print("CodeGen Visitor Results")
             print(f"{CYAN}==========================={RESET}")
-        my_print(filtered_output)
             
+        if filtered_output is not None:
+            MyPrinter.my_print(filtered_output)
+
         if is_interactive:
             input_stream = InputStream(input('? '))
              
         
 
-def antlr(visitor, input_stream, is_debug):
+def setPerserTree(input_stream):
     error_listener = MyErrorListener()
     
     lexer = gLexer(input_stream)
@@ -75,35 +86,24 @@ def antlr(visitor, input_stream, is_debug):
     parser = gParser(token_stream)
     parser.removeErrorListeners()
     parser.addErrorListener(error_listener)
-
     tree = parser.program()
 
+    return parser, tree
+
+def visitParserTree(visitor, parser, tree, is_debug):
     DebugConfig.set_debug_visits(is_debug)
-    
+
+
     filtered_output = None
     if parser.getNumberOfSyntaxErrors() == 0:
         results = visitor.visit(tree)
-        filtered_output = [r for r in results if r is not None]
+        if results is not None:
+            filtered_output = [r for r in results if r is not None]
     else:
         print(parser.getNumberOfSyntaxErrors(), 'sintax error')
         print(tree.toStringTree(recog=parser))
   
     return filtered_output
-
-def format_element(elem):
-    if isinstance(elem, np.int32):
-        return f"_{abs(elem)}" if elem < 0 else str(elem)
-    elif isinstance(elem, np.ndarray):
-        return " ".join(format_element(e) for e in elem)
-    return None
-
-
-def my_print(output_list):
-    [print(format_element(elem)) for elem in output_list if format_element(elem) is not None]
-
-def my_write(output_list, file_path):
-    with open(file_path, "w") as f:
-        [f.write(format_element(item) + '\n') for item in output_list if format_element(item) is not None]
 
 
 if __name__ == '__main__':
