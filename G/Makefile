@@ -8,7 +8,7 @@ all: venv pristine run
 antlr: $(GEN_FILES)
 
 $(GEN_FILES): $(GRAMMAR)
-	$(ANTLR) -Dlanguage=Python3 -visitor $(GRAMMAR)
+	$(ANTLR) -Dlanguage=Python3 -no-listener -visitor $(GRAMMAR)
 
 clean:
 	rm -f *.pyc *.class $(GEN_FILES)
@@ -22,6 +22,9 @@ pristine: realclean
 venv:
 	python3 -m venv venv
 	. venv/bin/activate && pip install --upgrade pip && pip install antlr4-python3-runtime==4.13.2 numpy
+
+ia: antlr
+	. venv/bin/activate && python3 g.py --ia
 
 run: antlr
 	. venv/bin/activate && python3 g.py ../tests/programa.j
