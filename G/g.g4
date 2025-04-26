@@ -1,6 +1,6 @@
 grammar g;
 
-program: NEWLINE* (statement NEWLINE*)+ EOF;
+program: NEWLINE* (statement (NEWLINE+|EOF))+ EOF; // TODO
 
 statement
     : expr
