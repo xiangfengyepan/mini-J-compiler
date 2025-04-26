@@ -16,7 +16,8 @@ expr
     | op=(NEG|PLUS)  expr                           # unary
 
     | expr op=(CONCATE|HASH|INDEX) FLIP? expr       # aritmetic
-    | expr op=(MUL|DIV|POW|MOD) FLIP? expr          # aritmetic
+    | <assoc=right> expr POW FLIP? expr             # aritmetic
+    | expr op=(MUL|DIV|MOD) FLIP? expr              # aritmetic
     | expr op=(PLUS|MINUS) FLIP? expr               # aritmetic
 
     | op=(CONCATE|HASH|INDEX) DOUBLE expr           # aritmetic

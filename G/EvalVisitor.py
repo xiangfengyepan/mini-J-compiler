@@ -84,8 +84,7 @@ class EvalVisitor(gVisitor):
         lhs = self.visit(ctx.expr(0)) if ctx.expr(0) else None
         rhs = self.visit(ctx.expr(1)) if ctx.expr(1) else None
 
-        if rhs is None:
-            rhs = lhs
+        rhs = lhs if rhs is None else rhs
 
         if ctx.FLIP():
             aux = lhs

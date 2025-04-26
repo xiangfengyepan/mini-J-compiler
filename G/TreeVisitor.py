@@ -48,7 +48,11 @@ class TreeVisitor(gVisitor):
 
     @debug_visit
     def visitAritmetic(self, ctx):
-        print('  ' * self.nivell + ctx.op.text)
+        op = ctx.POW().getText() if ctx.POW() else ctx.op.text
+        double = ctx.DOUBLE().getText() if ctx.DOUBLE() else ""
+        flip = ctx.FLIP().getText() if ctx.FLIP() else ""
+        print('  ' * self.nivell + op + double + flip)
+
         self.nivell += 1
         self.visitChildren(ctx)
         self.nivell -= 1
@@ -56,7 +60,10 @@ class TreeVisitor(gVisitor):
 
     @debug_visit
     def visitFold(self, ctx):
-        print('  ' * self.nivell + f"{ctx.op.text}")
+        op = ctx.op.text
+        fold = ctx.FOLD().getText()
+        print('  ' * self.nivell + op + fold)
+        
         self.nivell += 1
         self.visitChildren(ctx)
         self.nivell -= 1
