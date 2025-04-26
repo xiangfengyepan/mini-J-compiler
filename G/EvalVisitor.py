@@ -21,8 +21,7 @@ class EvalVisitor(gVisitor):
         results = []
         for child in ctx.statement():
             result = self.visit(child)
-            if not isinstance(child, gParser.DeclarationStmtContext):
-                results.append(result)
+            results.append(result)
         return results
         
     @debug_visit
@@ -36,17 +35,30 @@ class EvalVisitor(gVisitor):
     @debug_visit
     def visitIfStmt(self, ctx):
         cond = self.visit(ctx.expr())
+        value = None
         if cond:
             for child in ctx.statement(): 
-                self.visit(child)
-        return
+                value = self.visit(child)
+        return value
     
     @debug_visit
     def visitWhileStmt(self, ctx):
+        value = None
         while self.visit(ctx.expr()):
             for child in ctx.statement(): 
-                self.visit(child)
-        return
+                value = self.visit(child)
+        return value
+    
+    @debug_visit
+    def visitMainCall(self, ctx):
+        self.scope = ctx.MAIN().getText()
+        for statement in ctx.statement():
+            value = self.visit(statement)
+            if isinstance(statement, gParser.ReturnStmtContext):
+                return value
+        self.scope = None
+        
+        return value
     
     @debug_visit
     def visitFuncStmt(self, ctx):
@@ -73,12 +85,14 @@ class EvalVisitor(gVisitor):
             self.localVariables[name][param] = self.visit(ctx.expr(i))
 
         self.scope = name
+        value = None
         for statement in funcCtx:
             value = self.visit(statement)
             if isinstance(statement, gParser.ReturnStmtContext):
                 return value
-            
-        return
+        self.scope = None
+        
+        return value
     
     @debug_visit
     def visitReturnStmt(self, ctx):
@@ -90,7 +104,13 @@ class EvalVisitor(gVisitor):
     def visitDeclaration(self, ctx):
         name = ctx.ID().getText()
         value = self.visit(ctx.expr())
-        self.variables[name] = value
+        
+        if self.scope is not None:
+            if self.scope not in self.localVariables:
+                self.localVariables[self.scope] = {}
+            self.localVariables[self.scope][name] = value
+        else: 
+            self.variables[name] = value
         return
 
     @debug_visit

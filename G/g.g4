@@ -14,7 +14,7 @@ statement
     | MAIN NEWLINE+ statement+ END endOfStmt        # mainCall
     | FUNCTION ID '(' (ID (';' ID)*)? ')' NEWLINE+
        statement+ END endOfStmt                     # funcStmt
-    | ID '(' (expr (';' expr)*)? ')' endOfStmt      # funcCall
+    
     | RETURN expr? endOfStmt                        # returnStmt
     ;
 
@@ -27,6 +27,8 @@ declaration: ID ASSIGN expr;
 
 expr
     : '(' expr ')'                                  # parent
+    
+    | ID '(' (expr (';' expr)*)? ')'                # funcCall
 
     | op=(IDENTITY|HASH|ARANGE) expr                # unary
     | op=(NEG|PLUS)  expr                           # unary
