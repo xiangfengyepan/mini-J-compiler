@@ -39,30 +39,30 @@ def main():
         treeVisitor = TreeVisitor()
     evalVisitor = EvalVisitor()
 
-    while is_interactive or not filtered_output:
-        parser, tree = setPerserTree(input_stream)
-        
+    while True:
+        parser, tree = setParserTree(input_stream)
+
         if not is_test and is_tree:
             visitParserTree(treeVisitor, parser, tree, is_debug)
         filtered_output = visitParserTree(evalVisitor, parser, tree, is_debug)
 
-        if filtered_output is None:
-            return
-        
-        if is_test:
+        if filtered_output and is_test:
             base_name = os.path.splitext(file_name)[0]
             MyPrinter.my_write(filtered_output, f"{base_name}.out")
-        else:
+        elif filtered_output:
             if not is_interactive:
                 MyPrinter.show_title()
             MyPrinter.my_print(filtered_output)
 
         if is_interactive:
             input_stream = InputStream(input('> '))
-             
+            continue
+    
+        break
+                
         
 
-def setPerserTree(input_stream):
+def setParserTree(input_stream):
     error_listener = MyErrorListener()
     
     lexer = gLexer(input_stream)
@@ -81,7 +81,7 @@ def setPerserTree(input_stream):
         for error in lexical_errors:
             print(f"Lexical error found: '{error.text}' at line {error.line}, column {error.column}")
         print("Aborting execution due to lexical errors.")
-        return
+        sys.exit(1)
         
     parser = gParser(token_stream)
     parser.removeErrorListeners()

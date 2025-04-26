@@ -8,6 +8,13 @@ class EvalVisitor(gVisitor):
     def __init__(self):
         super().__init__()
         self.variables = {}
+        self.localVariables = {}
+        self.scope = None
+
+        self.functions = {
+            "params": [],
+            "funcCtx": []
+        }
 
     @debug_visit
     def visitProgram(self, ctx):
@@ -42,6 +49,44 @@ class EvalVisitor(gVisitor):
         return
     
     @debug_visit
+    def visitFuncStmt(self, ctx):
+        name = ctx.ID(0).getText()
+        params = []
+        for param in ctx.ID()[1:]:
+            params.append(param.getText())
+        funcCtx = ctx.statement()
+        self.functions[name] = {
+            "params": params,
+            "funcCtx": funcCtx
+        }
+        return
+    
+    @debug_visit
+    def visitFuncCall(self, ctx):
+        name = ctx.ID().getText()
+        params = self.functions[name]['params']
+        funcCtx = self.functions[name]['funcCtx']
+
+        for i, param in enumerate(params):
+            if name not in self.localVariables:
+                self.localVariables[name] = {}
+            self.localVariables[name][param] = self.visit(ctx.expr(i))
+
+        self.scope = name
+        for statement in funcCtx:
+            value = self.visit(statement)
+            if isinstance(statement, gParser.ReturnStmtContext):
+                return value
+            
+        return
+    
+    @debug_visit
+    def visitReturnStmt(self, ctx):
+        if ctx.expr():
+            return self.visit(ctx.expr())
+        return None
+
+    @debug_visit
     def visitDeclaration(self, ctx):
         name = ctx.ID().getText()
         value = self.visit(ctx.expr())
@@ -54,7 +99,14 @@ class EvalVisitor(gVisitor):
 
     @debug_visit
     def visitVariable(self, ctx):
-        var = self.variables[ctx.ID().getText()]
+        name = ctx.ID().getText()
+        var = None
+        if not self.scope is None:
+            if name in self.localVariables[self.scope]:
+                var = self.localVariables[self.scope][name]
+
+        if var is None:
+            var = self.variables[name]
         return var
 
     @debug_visit

@@ -11,6 +11,10 @@ statement
         NEWLINE* statement+ END endOfStmt           # ifStmt
     | WHILE expr DO 
         NEWLINE* statement+ END endOfStmt           # whileStmt
+    | FUNCTION ID '(' (ID (';' ID)*)? ')' NEWLINE+
+       statement+ END endOfStmt                     # funcStmt
+    | ID '(' (expr (';' expr)*)? ')' endOfStmt      # funcCall
+    | RETURN expr? endOfStmt                        # returnStmt
     ;
 
 endOfStmt
@@ -21,7 +25,7 @@ endOfStmt
 declaration: ID ASSIGN expr;
 
 expr
-    : LPAREN expr RPAREN                            # parent
+    : '(' expr ')'                                  # parent
 
     | op=(IDENTITY|HASH|ARANGE) expr                # unary
     | op=(NEG|PLUS)  expr                           # unary
@@ -45,13 +49,13 @@ expr
     | ID                                            # variable
     ;
 
+FUNCTION: 'function' ;
+RETURN: 'return' ;
+
 IF: 'if.' ;
 END: 'end.' ;
 WHILE: 'while.' ;
 DO: 'do.' ;
-
-LPAREN: '('  ;
-RPAREN: ')'  ;
 
 ASSIGN      : ('=:' | '=.'); // TODO
 EQUAL       : '=' ;
