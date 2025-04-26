@@ -1,25 +1,27 @@
 #!/bin/bash
 
-INPUT_DIR="../tests/basics/"
+INPUT_DIR="../tests/"
 JCONSOLE_PATH="../j9.6/bin/jconsole"
 
-for jfile in "${INPUT_DIR}"*.j; do
+find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
     echo "Converting 2 LF: $jfile"
     dos2unix "$jfile"
 done
 
-for jfile in "${INPUT_DIR}"*.j; do
+find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
     echo "Processing solve: $jfile"
     base_name=$(basename "$jfile" .j)
-    output_file="${INPUT_DIR}${base_name}.solve"
+    dir_name=$(dirname "$jfile")
+    output_file="${dir_name}/${base_name}.solve"
     $JCONSOLE_PATH < "$jfile" > "$output_file"
 done
 
-for jfile in "${INPUT_DIR}"*.j; do
+find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
     echo "Processing mini J: $jfile"
     base_name=$(basename "$jfile" .j)
-    input_file="${INPUT_DIR}${base_name}.inp"
-    output_file="${INPUT_DIR}${base_name}.out"
+    dir_name=$(dirname "$jfile")
+    input_file="${dir_name}/${base_name}.inp"
+    output_file="${dir_name}/${base_name}.out"
     
     (
     . venv/bin/activate
@@ -27,10 +29,11 @@ for jfile in "${INPUT_DIR}"*.j; do
     )
 done
 
-for jfile in "${INPUT_DIR}"*.j; do
+find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
     base_name=$(basename "$jfile" .j)
-    output_file="${INPUT_DIR}${base_name}.out"
-    solve_file="${INPUT_DIR}${base_name}.solve"
+    dir_name=$(dirname "$jfile")
+    output_file="${dir_name}/${base_name}.out"
+    solve_file="${dir_name}/${base_name}.solve"
 
     echo "Comparing: $output_file vs $solve_file"
     delta "$output_file" "$solve_file" || true
