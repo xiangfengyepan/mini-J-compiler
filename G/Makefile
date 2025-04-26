@@ -3,7 +3,7 @@ GRAMMAR=g.g4
 GEN_FILES=gLexer.py gParser.py gVisitor.py
 
 
-all: venv pristine run
+all: venv pristine test help
 
 antlr: $(GEN_FILES)
 
@@ -20,6 +20,7 @@ pristine: realclean
 	rm -rf __pycache__ .antlr
 
 venv:
+	@echo "Creates a virtual environment and installs dependencies, this may take a while"
 	python3 -m venv venv
 	. venv/bin/activate && pip install --upgrade pip && pip install antlr4-python3-runtime==4.13.2 numpy
 

@@ -48,19 +48,22 @@ class MyErrorListener(ErrorListener):
         print(f"Error en la linia {line}, columna {column}: {msg}")
 
 class MyPrinter:
-    def format_element(elem):
+    def format_element(elem, print_errors = False):
         if isinstance(elem, np.int32):
             return f"_{abs(elem)}" if elem < 0 else str(elem)
         elif isinstance(elem, np.ndarray):
             return " ".join(MyPrinter.format_element(e) for e in elem)
+        elif print_errors and isinstance(elem, str):
+            return elem
         return None
+    
     def my_print(output_list):
-        [print(MyPrinter.format_element(elem)) for elem in output_list if MyPrinter.format_element(elem) is not None]
+        [print(formatted) for elem in output_list if (formatted := MyPrinter.format_element(elem, True)) is not None]
+
 
     def my_write(output_list, file_path):
         with open(file_path, "w") as f:
-            [f.write(MyPrinter.format_element(item) + '\n') for item in output_list if MyPrinter.format_element(item) is not None]
-
+            [f.write(formatted + '\n') for elem in output_list if (formatted := MyPrinter.format_element(elem)) is not None]
 
     def show_title():
         CYAN = "\033[96m"

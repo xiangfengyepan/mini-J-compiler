@@ -8,8 +8,8 @@ EXCLUDE_FILES=(
   "${INPUT_DIR}basics/relational_op.j"
 )
 
+# Conver files to LF format
 find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
-    # Verificar si el archivo está en la lista de exclusión
     if [[ ! " ${EXCLUDE_FILES[@]} " =~ " ${jfile} " ]]; then
         echo "Converting 2 LF: $jfile"
         dos2unix "$jfile"
@@ -18,6 +18,7 @@ find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
     fi
 done
 
+# Generate *.solve with jconsole
 find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
     if [[ ! " ${EXCLUDE_FILES[@]} " =~ " ${jfile} " ]]; then
         echo "Processing solve: $jfile"
@@ -30,23 +31,24 @@ find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
     fi
 done
 
+# Generate *.out with --test
 find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
     if [[ ! " ${EXCLUDE_FILES[@]} " =~ " ${jfile} " ]]; then
         echo "Processing mini J: $jfile"
         base_name=$(basename "$jfile" .j)
         dir_name=$(dirname "$jfile")
         input_file="${dir_name}/${base_name}.inp"
-        output_file="${dir_name}/${base_name}.out"
-        
+
         (
         . venv/bin/activate
-        python3 g.py --test "$jfile" < "$input_file" > "$output_file"
+        python3 g.py --test "$jfile" < "$input_file"
         )
     else
         echo "Skipping: $jfile"
     fi
 done
 
+# Compare *.out vs *.solve, except EXCLUDE_FILES 
 find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
     if [[ ! " ${EXCLUDE_FILES[@]} " =~ " ${jfile} " ]]; then
         base_name=$(basename "$jfile" .j)

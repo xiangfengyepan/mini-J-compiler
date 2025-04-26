@@ -52,10 +52,9 @@ def main():
         if is_test:
             base_name = os.path.splitext(file_name)[0]
             MyPrinter.my_write(filtered_output, f"{base_name}.out")
-        elif not is_interactive:
-            MyPrinter.show_title()
-            
-        if filtered_output is not None:
+        else:
+            if not is_interactive:
+                MyPrinter.show_title()
             MyPrinter.my_print(filtered_output)
 
         if is_interactive:
