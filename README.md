@@ -5,3 +5,9 @@
 - make run
 - make debug
 - make test
+
+
+
+- treballant amb presicio de int32
+- codi en angles, joc de proves, etc
+- <> no funciona
