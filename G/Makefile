@@ -30,5 +30,9 @@ run: antlr
 	. venv/bin/activate && python3 g.py ../tests/programa.j $(ARGS)
 
 
+
+test: antlr
+	../myTest
+
 .PHONY: venv
 

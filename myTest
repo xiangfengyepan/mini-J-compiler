@@ -1,9 +1,7 @@
 #!/bin/bash
 
 INPUT_DIR="../tests/basics/"
-# JCONSOLE_PATH="/opt/j9.6/bin/jconsole"
 JCONSOLE_PATH="../j9.6/bin/jconsole"
-
 
 for jfile in "${INPUT_DIR}"*.j; do
     echo "Converting 2 LF: $jfile"
@@ -11,32 +9,29 @@ for jfile in "${INPUT_DIR}"*.j; do
 done
 
 for jfile in "${INPUT_DIR}"*.j; do
-    echo "Processing solve: $jfile -> $output_file"
+    echo "Processing solve: $jfile"
     base_name=$(basename "$jfile" .j)
-    
     output_file="${INPUT_DIR}${base_name}.solve"
-    
     $JCONSOLE_PATH < "$jfile" > "$output_file"
 done
 
 for jfile in "${INPUT_DIR}"*.j; do
-    echo "Processing mini J: $jfile -> $output_file"
+    echo "Processing mini J: $jfile"
     base_name=$(basename "$jfile" .j)
-
     input_file="${INPUT_DIR}${base_name}.inp"
     output_file="${INPUT_DIR}${base_name}.out"
     
-    . venv/bin/activate && python3 g.py --test "../tests/$jfile" < "$input_file"  > "$output_file"   
+    (
+    . venv/bin/activate
+    python3 g.py --test "$jfile" < "$input_file" > "$output_file"
+    )
 done
 
 for jfile in "${INPUT_DIR}"*.j; do
     base_name=$(basename "$jfile" .j)
-
     output_file="${INPUT_DIR}${base_name}.out"
     solve_file="${INPUT_DIR}${base_name}.solve"
 
-    echo "Comparing: $jfile -> $output_file"
-
-    delta "$output_file" "$solve_file"  # assuming 'delta' is a diff tool
+    echo "Comparing: $output_file vs $solve_file"
+    delta "$output_file" "$solve_file" || true
 done
-

@@ -16,15 +16,6 @@ class TreeVisitor(gVisitor):
         return
 
     @debug_visit
-    def visitFuncCall(self, ctx):
-        func_name = ctx.ID().getText()
-        print('  ' * self.nivell + f"{func_name}()")
-        self.nivell += 1
-        self.visitChildren(ctx)
-        self.nivell -= 1
-        return
-
-    @debug_visit
     def visitVariable(self, ctx):
         var_name = ctx.ID().getText()
         print('  ' * self.nivell + f"{var_name}")
@@ -65,7 +56,7 @@ class TreeVisitor(gVisitor):
 
     @debug_visit
     def visitFold(self, ctx):
-        print('  ' * self.nivell + f"{ctx.foldop.text}")
+        print('  ' * self.nivell + f"{ctx.op.text}")
         self.nivell += 1
         self.visitChildren(ctx)
         self.nivell -= 1
