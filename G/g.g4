@@ -1,6 +1,6 @@
 grammar g;
 
-program: (statement NEWLINE*)* EOF;
+program: NEWLINE* (statement NEWLINE*)+ EOF;
 
 statement
     : expr
@@ -15,10 +15,10 @@ expr
     | op=(IDENTITY|HASH|ARANGE) expr                # unary
     | op=(NEG|PLUS)  expr                           # unary
 
-    | expr op=(CONCATE|HASH|INDEX) FLIP? expr       # aritmetic
-    | <assoc=right> expr POW FLIP? expr             # aritmetic
-    | expr op=(MUL|DIV|MOD) FLIP? expr              # aritmetic
-    | expr op=(PLUS|MINUS) FLIP? expr               # aritmetic
+    | <assoc=right> expr 
+        op=(CONCATE|HASH|INDEX) FLIP? expr          # aritmetic
+    | <assoc=right> expr 
+        op=(PLUS|MINUS|MUL|DIV|POW|MOD) FLIP? expr      # aritmetic
 
     | op=(CONCATE|HASH|INDEX) DOUBLE expr           # aritmetic
     | op=(MUL|DIV|POW|MOD) DOUBLE expr              # aritmetic
@@ -28,7 +28,8 @@ expr
     | op=(MUL|DIV|POW|MOD) FOLD expr                # fold
     | op=(PLUS|MINUS) FOLD expr                     # fold
 
-    | expr op=(EQUAL|NE|LT|GT|LE|GE) expr           # relational
+    | <assoc=right> 
+        expr op=(EQUAL|NE|LT|GT|LE|GE) expr         # relational
     | INTVAL+                                       # value
     | ID                                            # variable
     ;

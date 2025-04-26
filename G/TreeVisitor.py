@@ -48,7 +48,7 @@ class TreeVisitor(gVisitor):
 
     @debug_visit
     def visitAritmetic(self, ctx):
-        op = ctx.POW().getText() if ctx.POW() else ctx.op.text
+        op = ctx.op.text
         double = ctx.DOUBLE().getText() if ctx.DOUBLE() else ""
         flip = ctx.FLIP().getText() if ctx.FLIP() else ""
         print('  ' * self.nivell + op + double + flip)
