@@ -34,13 +34,6 @@ class EvalVisitor(gVisitor):
         return self.visit(ctx.declaration())
 
     @debug_visit
-    def visitWhileStmt(self, ctx):
-        while self.visit(ctx.expr()):
-            for child in ctx.statement(): 
-                self.visit(child)
-        return
-    
-    @debug_visit
     def visitIfStmt(self, ctx):
         cond = self.visit(ctx.expr())
         if cond:
@@ -49,9 +42,16 @@ class EvalVisitor(gVisitor):
         return
     
     @debug_visit
+    def visitWhileStmt(self, ctx):
+        while self.visit(ctx.expr()):
+            for child in ctx.statement(): 
+                self.visit(child)
+        return
+    
+    @debug_visit
     def visitFuncStmt(self, ctx):
         name = ctx.ID(0).getText()
-        params = []
+        params = []            
         for param in ctx.ID()[1:]:
             params.append(param.getText())
         funcCtx = ctx.statement()

@@ -11,6 +11,7 @@ statement
         NEWLINE* statement+ END endOfStmt           # ifStmt
     | WHILE expr DO 
         NEWLINE* statement+ END endOfStmt           # whileStmt
+    | MAIN NEWLINE+ statement+ END endOfStmt        # mainCall
     | FUNCTION ID '(' (ID (';' ID)*)? ')' NEWLINE+
        statement+ END endOfStmt                     # funcStmt
     | ID '(' (expr (';' expr)*)? ')' endOfStmt      # funcCall
@@ -49,6 +50,7 @@ expr
     | ID                                            # variable
     ;
 
+MAIN: 'main' ;
 FUNCTION: 'function' ;
 RETURN: 'return' ;
 

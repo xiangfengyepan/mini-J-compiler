@@ -43,7 +43,7 @@ def main():
         parser, tree = setParserTree(input_stream)
 
         if not is_test and is_tree:
-            visitParserTree(treeVisitor, parser, tree, is_debug)
+            visitParserTree(treeVisitor, parser, tree, False)
         filtered_output = visitParserTree(evalVisitor, parser, tree, is_debug)
 
         if filtered_output and is_test:

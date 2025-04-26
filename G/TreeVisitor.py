@@ -24,6 +24,30 @@ class TreeVisitor(gVisitor):
         return
     
     @debug_visit
+    def visitFuncStmt(self, ctx):
+        print('  ' * self.nivell + f"function {ctx.ID(0).getText()}({", ".join([param.getText() for param in ctx.ID()[1:]])})")
+        self.nivell += 1
+        self.visitChildren(ctx)
+        self.nivell -= 1
+        return
+    
+    @debug_visit
+    def visitFuncCall(self, ctx):
+        print('  ' * self.nivell + f"{ctx.ID()}({", ".join([param.getText() for param in ctx.expr()])})")
+        self.nivell += 1
+        self.visitChildren(ctx)
+        self.nivell -= 1
+        return
+    
+    @debug_visit
+    def visitReturnStmt(self, ctx):
+        print('  ' * self.nivell + f"return {self.visit(ctx.expr()) if ctx.expr() else ""})")
+        self.nivell += 1
+        self.visitChildren(ctx)
+        self.nivell -= 1
+        return
+    
+    @debug_visit
     def visitParent(self, ctx):
         print('  ' * self.nivell + "()")
         self.nivell += 1
