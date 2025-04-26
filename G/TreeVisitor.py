@@ -8,6 +8,22 @@ class TreeVisitor(gVisitor):
         self.nivell = 0
 
     @debug_visit
+    def visitIfStmt(self, ctx):
+        print('  ' * self.nivell + ctx.IF().getText())
+        self.nivell += 1
+        self.visitChildren(ctx)
+        self.nivell -= 1
+        return
+
+    @debug_visit
+    def visitWhileStmt(self, ctx):
+        print('  ' * self.nivell + ctx.WHILE().getText())
+        self.nivell += 1
+        self.visitChildren(ctx)
+        self.nivell -= 1
+        return
+    
+    @debug_visit
     def visitParent(self, ctx):
         print('  ' * self.nivell + "()")
         self.nivell += 1

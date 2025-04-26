@@ -9,19 +9,20 @@ EXCLUDE_FILES=(
 )
 
 # Conver files to LF format
+echo "Converting 2 LF..."
 find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
     if [[ ! " ${EXCLUDE_FILES[@]} " =~ " ${jfile} " ]]; then
-        echo "Converting 2 LF: $jfile"
-        dos2unix "$jfile"
+        dos2unix "$jfile" > /dev/null 2>&1
     else
         echo "Skipping: $jfile"
     fi
 done
+echo "Done"
 
 # Generate *.solve with jconsole
 find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
     if [[ ! " ${EXCLUDE_FILES[@]} " =~ " ${jfile} " ]]; then
-        echo "Processing solve: $jfile"
+        echo "Generating solve: $jfile"
         base_name=$(basename "$jfile" .j)
         dir_name=$(dirname "$jfile")
         output_file="${dir_name}/${base_name}.solve"
@@ -30,6 +31,7 @@ find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
         echo "Skipping: $jfile"
     fi
 done
+echo "Done"
 
 # Generate *.out with --test
 find "$INPUT_DIR" -name "*.j" | while read -r jfile; do

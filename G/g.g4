@@ -1,10 +1,21 @@
 grammar g;
 
-program: NEWLINE* (statement (NEWLINE+|EOF))+ EOF; // TODO
+IGNORE : ('program =: 3 : 0' | NEWLINE+ ')' | 'program ' '\'' '\'') -> skip ; // TODO
+
+program: NEWLINE* statement+ EOF;
 
 statement
-    : expr
-    | declaration
+    : expr endOfStmt                                # exprStmt
+    | declaration endOfStmt                         # declarationStmt
+    | IF expr DO
+        NEWLINE* statement+ END endOfStmt           # ifStmt
+    | WHILE expr DO 
+        NEWLINE* statement+ END endOfStmt           # whileStmt
+    ;
+
+endOfStmt
+    : NEWLINE+ 
+    | EOF
     ;
 
 declaration: ID ASSIGN expr;
@@ -18,7 +29,7 @@ expr
     | <assoc=right> expr 
         op=(CONCATE|HASH|INDEX) FLIP? expr          # aritmetic
     | <assoc=right> expr 
-        op=(PLUS|MINUS|MUL|DIV|POW|MOD) FLIP? expr      # aritmetic
+        op=(PLUS|MINUS|MUL|DIV|POW|MOD) FLIP? expr  # aritmetic
 
     | op=(CONCATE|HASH|INDEX) DOUBLE expr           # aritmetic
     | op=(MUL|DIV|POW|MOD) DOUBLE expr              # aritmetic
@@ -34,35 +45,40 @@ expr
     | ID                                            # variable
     ;
 
-LPAREN: '(' ;
-RPAREN: ')' ;
+IF: 'if.' ;
+END: 'end.' ;
+WHILE: 'while.' ;
+DO: 'do.' ;
 
-ASSIGN      : '=:' ;
+LPAREN: '('  ;
+RPAREN: ')'  ;
+
+ASSIGN      : ('=:' | '=.'); // TODO
 EQUAL       : '=' ;
-NE          : '<>';
-LT          : '<';
-GT          : '>';
-LE          : '<=';
-GE          : '>=';
+NE          : '<>' ;
+LT          : '<' ;
+GT          : '>' ;
+LE          : '<=' ;
+GE          : '>=' ;
 
-NEG         : '_';
+NEG         : '_' ;
 
 PLUS        : '+' ;
-MINUS       : '-';
-MUL         : '*';
-DIV         : '%';
-POW         : '^';
-MOD         : '|';
-CONCATE     : ',';
-HASH        : '#';
-INDEX       : '{';
+MINUS       : '-' ;
+MUL         : '*' ;
+DIV         : '%' ;
+POW         : '^' ;
+MOD         : '|' ;
+CONCATE     : ',' ;
+HASH        : '#' ;
+INDEX       : '{' ;
 
-IDENTITY    : ']';
-ARANGE      : 'i.';
-FOLD        : '/'; 
-FLIP        : '~';
+IDENTITY    : ']' ;
+ARANGE      : 'i.' ;
+FOLD        : '/' ; 
+FLIP        : '~' ;
 
-DOUBLE      : ':';
+DOUBLE      : ':' ;
 
 INTVAL    : ('0'..'9')+ ;
 ID        : ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
@@ -75,7 +91,7 @@ ESC_SEQ   : '\\' ('b'|'t'|'n'|'f'|'r'|'"'|'\''|'\\') ;
 
 NEWLINE : '\r'? '\n' ;
 
-COMMENT: 'NB.' ~[\r\n]* -> skip;
+COMMENT: 'NB.' ~[\r\n]* -> skip ;
 
 WS        : [ \t\r]+ -> skip ;   
 

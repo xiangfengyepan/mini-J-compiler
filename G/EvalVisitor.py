@@ -1,6 +1,7 @@
 import numpy as np
 
 from gVisitor import gVisitor
+from gParser import gParser
 from utils import debug_visit
 
 class EvalVisitor(gVisitor):
@@ -12,19 +13,34 @@ class EvalVisitor(gVisitor):
     def visitProgram(self, ctx):
         results = []
         for child in ctx.statement():
-            value = self.visit(child)
-            if not child.declaration():
-               results.append(value)     
-        
+            result = self.visit(child)
+            if not isinstance(child, gParser.DeclarationStmtContext):
+                results.append(result)
         return results
+        
+    @debug_visit
+    def visitExprStmt(self, ctx):
+        return self.visit(ctx.expr())
 
     @debug_visit
-    def visitStatement(self, ctx):
-        if ctx.expr():
-            return self.visit(ctx.expr())
-        elif ctx.declaration():
-            return self.visit(ctx.declaration())
+    def visitDeclarationStmt(self, ctx):
+        return self.visit(ctx.declaration())
 
+    @debug_visit
+    def visitWhileStmt(self, ctx):
+        while self.visit(ctx.expr()):
+            for child in ctx.statement(): 
+                self.visit(child)
+        return
+    
+    @debug_visit
+    def visitIfStmt(self, ctx):
+        cond = self.visit(ctx.expr())
+        if cond:
+            for child in ctx.statement(): 
+                self.visit(child)
+        return
+    
     @debug_visit
     def visitDeclaration(self, ctx):
         name = ctx.ID().getText()
