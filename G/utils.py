@@ -52,7 +52,9 @@ class MyPrinter:
         if isinstance(elem, np.int32):
             return f"_{abs(elem)}" if elem < 0 else str(elem)
         elif isinstance(elem, np.ndarray):
-            return " ".join(MyPrinter.format_element(e) for e in elem)
+            result = " ".join(e for e in [MyPrinter.format_element(e) for e in elem] if e is not None)
+            return result if result else None
+        
         elif print_errors and isinstance(elem, str):
             return elem
         return None
@@ -71,8 +73,36 @@ class MyPrinter:
         print()
         print("CodeGen Visitor Results")
         print(f"{CYAN}==========================={RESET}")
+
+class ReturnSignal(np.ndarray):
+    def __new__(cls, value=None):
+        obj = super().__new__(cls, shape=(1,), dtype=np.int32)
+        obj[0] = np.int32(value)
+
+        return obj
+
+    def __repr__(self):
+        return f"ReturnSignal({self[0]})"
             
+class ReturnSignal(np.int32):
+    def __new__(cls, value=None):
+        return super().__new__(cls, value)
+
+    def __repr__(self):
+        return f"ReturnSignal({self})"
 
 
+def flatten_list(input_list):
+    flattened = []
+    
+    for item in input_list:
+        # Si el item es una lista, llamamos recursivamente para aplanarlo
+        if isinstance(item, list):
+            flattened.extend(flatten_list(item))  # Aplanamos la lista recursivamente
+        else:
+            # Si el item es np.int32 o np.ndarray, lo agregamos
+            flattened.append(np.atleast_1d(item))  # Convertimos a un array de 1D si es necesario
+
+    return flattened
 
 

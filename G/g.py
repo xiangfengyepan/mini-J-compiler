@@ -5,7 +5,7 @@ from gParser import gParser
 from EvalVisitor import EvalVisitor
 from TreeVisitor import TreeVisitor
 
-from utils import DebugConfig, MyErrorListener, MyPrinter
+from utils import DebugConfig, MyErrorListener, MyPrinter, flatten_list
 
 def main():
     args = sys.argv[1:]
@@ -46,6 +46,8 @@ def main():
             visitParserTree(treeVisitor, parser, tree, False)
         filtered_output = visitParserTree(evalVisitor, parser, tree, is_debug)
 
+        filtered_output = flatten_list(filtered_output)
+        
         if filtered_output and is_test:
             base_name = os.path.splitext(file_name)[0]
             MyPrinter.my_write(filtered_output, f"{base_name}.out")

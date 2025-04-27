@@ -1,8 +1,10 @@
 import numpy as np
 
+import sys
+
 from gVisitor import gVisitor
 from gParser import gParser
-from utils import debug_visit
+from utils import debug_visit, ReturnSignal
 
 class EvalVisitor(gVisitor):
     def __init__(self):
@@ -15,53 +17,67 @@ class EvalVisitor(gVisitor):
             "funcCtx": []
         }
 
+        self.callStack = []
+
     @debug_visit
     def visitProgram(self, ctx):
         results = []
         for child in ctx.statement():
-            if isinstance(child, gParser.FuncCallContext) or isinstance(child, gParser.MainCallContext):
-                for innerChild in child.statement():
-                    results.append(self.visit(innerChild))
-            else: 
-                results.append(self.visit(child))
+            value = self.visit(child)
+            if value is not None:
+                results.append(value)
         return results
-        
+            
     @debug_visit
     def visitExprStmt(self, ctx):
         return self.visit(ctx.expr())
 
     @debug_visit
-    def visitDeclarationStmt(self, ctx):
-        return self.visit(ctx.declaration())
+    def visitIfStmt(self, ctx):
+        results = []
+        cond = self.visit(ctx.expr())
+        if cond:
+            for child in ctx.statement():
+                if isinstance(child, gParser.ReturnStmtContext):
+                    print("Return statement found inside if statement")
+                    value = self.visit(child)
+                    results.append(ReturnSignal(value))
+                    return results
+                      
+                results.append(self.visit(child))
+
+        return results
 
     @debug_visit
-    def visitIfStmt(self, ctx):
-        cond = self.visit(ctx.expr())
-        value = None
-        if cond:
-            for child in ctx.statement(): 
-                value = self.visit(child)
-        return value
-    
-    @debug_visit
     def visitWhileStmt(self, ctx):
-        value = None
+        results = []
         while self.visit(ctx.expr()):
-            for child in ctx.statement(): 
-                value = self.visit(child)
-        return value
+            for child in ctx.statement():
+                if isinstance(child, gParser.ReturnStmtContext):
+                    print("Return statement found inside while statement")
+                    value = self.visit(child) 
+                    results.append(ReturnSignal(value))
+                    return results
+                    
+                results.append(self.visit(child))
+
+        return results
     
     @debug_visit
     def visitMainCall(self, ctx):
         self.funcScope.append(ctx.MAIN().getText())
-
+        results = []
         for statement in ctx.statement():
             value = self.visit(statement)
+            if value is not None:
+                results.append(value)
+
             if isinstance(statement, gParser.ReturnStmtContext):
-                return value
+                self.funcScope.pop()
+                return results
         self.funcScope.pop()
         
-        return value
+        return results
     
     @debug_visit
     def visitFuncStmt(self, ctx):
@@ -75,33 +91,44 @@ class EvalVisitor(gVisitor):
             "funcCtx": funcCtx
         }
         return
-    
+
     @debug_visit
     def visitFuncCall(self, ctx):
         name = ctx.ID().getText()
         params = self.functions[name]['params']
         funcCtx = self.functions[name]['funcCtx']
-
+        
+        call_id = f"{name}_{sum(1 for call in self.callStack if call.startswith(name))}"
+        self.callStack.append(call_id)
+        self.localVariables[call_id] = {}
+        
         for i, param in enumerate(params):
-            if name not in self.localVariables:
-                self.localVariables[name] = {}
-            self.localVariables[name][param] = self.visit(ctx.expr(i))
-
-        self.funcScope.append(name)
+            self.localVariables[call_id][param] = self.visit(ctx.expr(i))
+        
+        previous_scope = self.funcScope[-1] if self.funcScope else '_global'
+        self.funcScope.append(call_id)
+        
         value = None
-        for statement in funcCtx:
-            value = self.visit(statement)
-            if isinstance(statement, gParser.ReturnStmtContext):
-                return value
-        self.funcScope.pop()
+        try:
+            for statement in funcCtx:
+                value = self.visit(statement)
+                if isinstance(statement, gParser.ReturnStmtContext):
+                    break
+                if isinstance(value, ReturnSignal) if not hasattr(value, '__iter__') else any(isinstance(item, ReturnSignal) for item in value):
+                    break
+        finally:
+            self.funcScope.pop()
+            self.callStack.pop()
+            if not any(call.startswith(name) for call in self.callStack):
+                del self.localVariables[call_id]
         
         return value
     
     @debug_visit
     def visitReturnStmt(self, ctx):
         if ctx.expr():
-            return self.visit(ctx.expr())
-        return None
+            return ReturnSignal(self.visit(ctx.expr()))
+        return ReturnSignal()
 
     @debug_visit
     def visitDeclaration(self, ctx):
@@ -109,9 +136,10 @@ class EvalVisitor(gVisitor):
         value = self.visit(ctx.expr())
         
         if len(self.funcScope) > 0:
-            if self.funcScope[-1] not in self.localVariables:
-                self.localVariables[self.funcScope[-1]] = {}
-            self.localVariables[self.funcScope[-1]][name] = value
+            currentScope = self.funcScope[-1]
+            if currentScope not in self.localVariables:
+                self.localVariables[currentScope] = {}
+            self.localVariables[currentScope][name] = value
         else: 
             self.localVariables["_global"][name] = value
         return
@@ -125,8 +153,9 @@ class EvalVisitor(gVisitor):
         name = ctx.ID().getText()
         var = None
         if len(self.funcScope) > 0:
-            if name in self.localVariables[self.funcScope[-1]]:
-                var = self.localVariables[self.funcScope[-1]][name]
+            currentScope = self.funcScope[-1]
+            if name in self.localVariables[currentScope]:
+                var = self.localVariables[currentScope][name]
         if var is None:
             var = self.localVariables["_global"][name]
         return var
