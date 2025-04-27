@@ -1,7 +1,5 @@
 import numpy as np
 
-import sys
-
 from gVisitor import gVisitor
 from gParser import gParser
 from utils import debug_visit, ReturnSignal
