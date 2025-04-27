@@ -61,7 +61,7 @@ END: 'end.' ;
 WHILE: 'while.' ;
 DO: 'do.' ;
 
-ASSIGN      : '=:';
+ASSIGN      : '=:' | '=.'; // TODO
 EQUAL       : '=' ;
 NE          : '<>' ;
 LT          : '<' ;

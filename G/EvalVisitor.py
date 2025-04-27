@@ -20,7 +20,7 @@ class EvalVisitor(gVisitor):
         results = []
         for child in ctx.statement():
             if isinstance(child, gParser.FuncCallContext) or isinstance(child, gParser.MainCallContext):
-                for innerChild in child.statement():
+                for innerChild in child.getChildren():
                     results.append(self.visit(innerChild))
             else: 
                 results.append(self.visit(child))
@@ -31,37 +31,40 @@ class EvalVisitor(gVisitor):
         return self.visit(ctx.expr())
 
     @debug_visit
-    def visitDeclarationStmt(self, ctx):
-        return self.visit(ctx.declaration())
-
-    @debug_visit
     def visitIfStmt(self, ctx):
         cond = self.visit(ctx.expr())
-        value = None
         if cond:
-            for child in ctx.statement(): 
-                value = self.visit(child)
-        return value
-    
+            for child in ctx.statement():
+                if isinstance(child, gParser.ReturnStmtContext):
+                    print("Return statement found inside if statement")
+                    self.visit(child)
+                    return  
+                self.visit(child)
+
+        return
+
     @debug_visit
     def visitWhileStmt(self, ctx):
-        value = None
         while self.visit(ctx.expr()):
-            for child in ctx.statement(): 
-                value = self.visit(child)
-        return value
+            for child in ctx.statement():
+                if isinstance(child, gParser.ReturnStmtContext):
+                    print("Return statement found inside while statement")
+                    self.visit(child) 
+                    return
+                self.visit(child)
+
+        return
     
     @debug_visit
     def visitMainCall(self, ctx):
         self.funcScope.append(ctx.MAIN().getText())
-
         for statement in ctx.statement():
             value = self.visit(statement)
             if isinstance(statement, gParser.ReturnStmtContext):
                 return value
         self.funcScope.pop()
         
-        return value
+        return
     
     @debug_visit
     def visitFuncStmt(self, ctx):
@@ -109,9 +112,10 @@ class EvalVisitor(gVisitor):
         value = self.visit(ctx.expr())
         
         if len(self.funcScope) > 0:
-            if self.funcScope[-1] not in self.localVariables:
-                self.localVariables[self.funcScope[-1]] = {}
-            self.localVariables[self.funcScope[-1]][name] = value
+            currentScope = self.funcScope[-1]
+            if currentScope not in self.localVariables:
+                self.localVariables[currentScope] = {}
+            self.localVariables[currentScope][name] = value
         else: 
             self.localVariables["_global"][name] = value
         return
@@ -125,8 +129,9 @@ class EvalVisitor(gVisitor):
         name = ctx.ID().getText()
         var = None
         if len(self.funcScope) > 0:
-            if name in self.localVariables[self.funcScope[-1]]:
-                var = self.localVariables[self.funcScope[-1]][name]
+            currentScope = self.funcScope[-1]
+            if name in self.localVariables[currentScope]:
+                var = self.localVariables[currentScope][name]
         if var is None:
             var = self.localVariables["_global"][name]
         return var
