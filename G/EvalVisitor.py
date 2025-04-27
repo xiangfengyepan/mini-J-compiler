@@ -8,7 +8,7 @@ class EvalVisitor(gVisitor):
     def __init__(self):
         super().__init__()
         self.localVariables = {"_global":{}}
-        self.funcScope = []
+        self.funcScope = ['_global']
 
         self.functions = {
             "params": [],
@@ -88,7 +88,6 @@ class EvalVisitor(gVisitor):
             self.localVariables[name][param] = self.visit(ctx.expr(i))
 
         self.funcScope.append(name)
-
         value = None
         for statement in funcCtx:
             value = self.visit(statement)
@@ -110,8 +109,8 @@ class EvalVisitor(gVisitor):
         value = self.visit(ctx.expr())
         
         if len(self.funcScope) > 0:
-            if self.funcScope not in self.localVariables:
-                self.localVariables[self.funcScope] = {}
+            if self.funcScope[-1] not in self.localVariables:
+                self.localVariables[self.funcScope[-1]] = {}
             self.localVariables[self.funcScope[-1]][name] = value
         else: 
             self.localVariables["_global"][name] = value
@@ -127,8 +126,7 @@ class EvalVisitor(gVisitor):
         var = None
         if len(self.funcScope) > 0:
             if name in self.localVariables[self.funcScope[-1]]:
-                var = self.localVariables[self.funcScope][name]
-
+                var = self.localVariables[self.funcScope[-1]][name]
         if var is None:
             var = self.localVariables["_global"][name]
         return var

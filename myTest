@@ -28,7 +28,7 @@ find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
     if [[ ! " ${EXCLUDE_FILES[@]} " =~ " ${jfile} " ]]; then
         dos2unix "$jfile" > /dev/null 2>&1
     else
-        echo "Skipping: $jfile"
+        echo -e "${YELLOW}Skipping: $jfile${NC}"
     fi
 done
 echo "Done"
@@ -42,7 +42,7 @@ find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
         output_file="${dir_name}/${base_name}.solve"
         $JCONSOLE_PATH < "$jfile" > "$output_file"
     else
-        echo "Skipping: $jfile"
+        echo -e "${YELLOW}Skipping: $jfile${NC}"
     fi
 done
 echo "Done"
@@ -86,6 +86,6 @@ find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
         echo "Comparing: $output_file vs $solve_file"
         delta "$output_file" "$solve_file" || true
     else
-        echo "Skipping: $jfile"
+        echo -e "${YELLOW}Skipping: $jfile${NC}"
     fi
 done

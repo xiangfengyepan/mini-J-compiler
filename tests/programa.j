@@ -1,20 +1,17 @@
-function sm(x; y)
-    return x + y
+function fibo(n)
+    if. n = 0 do.
+        return 0
+    end.
+    if. n = 1 do.
+        return 1
+    end.
+    return fibo(n-1) + fibo(n-2)
 end.
 
 main
-    a =: 1 + 2 
-    b =: a * 2
-
-    x =. 0          NB. Inicializamos x en 0
-    y =. 5          NB. Inicializamos y en 5
-    
-    sm(a; b)
-
-    while. x < y do.
-        NB. Dentro del bucle, incrementamos x
-        x =. x + 1
+    a =: 1
+    while. a <> 7 do.
+        fibo(a)
+        a =: a + 1
     end.
-    x
-
 end.
