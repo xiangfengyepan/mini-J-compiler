@@ -9,7 +9,7 @@ class EvalVisitor(gVisitor):
         super().__init__()
         self.variables = {}
         self.localVariables = {}
-        self.scope = None
+        self.funcScope = None
 
         self.functions = {
             "params": [],
@@ -20,8 +20,11 @@ class EvalVisitor(gVisitor):
     def visitProgram(self, ctx):
         results = []
         for child in ctx.statement():
-            result = self.visit(child)
-            results.append(result)
+            if isinstance(child, gParser.FuncCallContext) or isinstance(child, gParser.MainCallContext):
+                for innerChild in child.statement():
+                    results.append(self.visit(innerChild))
+            else: 
+                results.append(self.visit(child))
         return results
         
     @debug_visit
@@ -51,12 +54,12 @@ class EvalVisitor(gVisitor):
     
     @debug_visit
     def visitMainCall(self, ctx):
-        self.scope = ctx.MAIN().getText()
+        self.funcScope = ctx.MAIN().getText()
         for statement in ctx.statement():
             value = self.visit(statement)
             if isinstance(statement, gParser.ReturnStmtContext):
                 return value
-        self.scope = None
+        self.funcScope = None
         
         return value
     
@@ -84,13 +87,13 @@ class EvalVisitor(gVisitor):
                 self.localVariables[name] = {}
             self.localVariables[name][param] = self.visit(ctx.expr(i))
 
-        self.scope = name
+        self.funcScope = name
         value = None
         for statement in funcCtx:
             value = self.visit(statement)
             if isinstance(statement, gParser.ReturnStmtContext):
                 return value
-        self.scope = None
+        self.funcScope = None
         
         return value
     
@@ -105,10 +108,10 @@ class EvalVisitor(gVisitor):
         name = ctx.ID().getText()
         value = self.visit(ctx.expr())
         
-        if self.scope is not None:
-            if self.scope not in self.localVariables:
-                self.localVariables[self.scope] = {}
-            self.localVariables[self.scope][name] = value
+        if self.funcScope is not None:
+            if self.funcScope not in self.localVariables:
+                self.localVariables[self.funcScope] = {}
+            self.localVariables[self.funcScope][name] = value
         else: 
             self.variables[name] = value
         return
@@ -121,9 +124,9 @@ class EvalVisitor(gVisitor):
     def visitVariable(self, ctx):
         name = ctx.ID().getText()
         var = None
-        if not self.scope is None:
-            if name in self.localVariables[self.scope]:
-                var = self.localVariables[self.scope][name]
+        if not self.funcScope is None:
+            if name in self.localVariables[self.funcScope]:
+                var = self.localVariables[self.funcScope][name]
 
         if var is None:
             var = self.variables[name]
@@ -175,9 +178,7 @@ class EvalVisitor(gVisitor):
         rhs = lhs if rhs is None else rhs
 
         if ctx.FLIP():
-            aux = lhs
-            lhs = rhs
-            rhs = aux
+            lhs, rhs = rhs, lhs
 
         try:
             if ctx.MUL():
