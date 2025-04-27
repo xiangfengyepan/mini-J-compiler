@@ -1,5 +1,7 @@
 import numpy as np
 
+import sys
+
 from gVisitor import gVisitor
 from gParser import gParser
 from utils import debug_visit
@@ -15,17 +17,19 @@ class EvalVisitor(gVisitor):
             "funcCtx": []
         }
 
+        self.callStack = []
+
     @debug_visit
     def visitProgram(self, ctx):
         results = []
         for child in ctx.statement():
-            if isinstance(child, gParser.FuncCallContext) or isinstance(child, gParser.MainCallContext):
-                for innerChild in child.getChildren():
-                    results.append(self.visit(innerChild))
-            else: 
-                results.append(self.visit(child))
+            result = self.visit(child)
+            if isinstance(result, (list, tuple)):
+                results.extend(result)
+            elif result is not None:
+                results.append(result)
         return results
-        
+            
     @debug_visit
     def visitExprStmt(self, ctx):
         return self.visit(ctx.expr())
@@ -37,8 +41,9 @@ class EvalVisitor(gVisitor):
             for child in ctx.statement():
                 if isinstance(child, gParser.ReturnStmtContext):
                     print("Return statement found inside if statement")
-                    self.visit(child)
-                    return  
+                    value = self.visit(child)
+                    return value
+                      
                 self.visit(child)
 
         return
@@ -49,8 +54,8 @@ class EvalVisitor(gVisitor):
             for child in ctx.statement():
                 if isinstance(child, gParser.ReturnStmtContext):
                     print("Return statement found inside while statement")
-                    self.visit(child) 
-                    return
+                    return self.visit(child) 
+                    
                 self.visit(child)
 
         return
@@ -58,13 +63,15 @@ class EvalVisitor(gVisitor):
     @debug_visit
     def visitMainCall(self, ctx):
         self.funcScope.append(ctx.MAIN().getText())
+        results = []
         for statement in ctx.statement():
-            value = self.visit(statement)
+            results.append(self.visit(statement))
             if isinstance(statement, gParser.ReturnStmtContext):
-                return value
+                self.funcScope.pop()
+                return results
         self.funcScope.pop()
         
-        return
+        return results
     
     @debug_visit
     def visitFuncStmt(self, ctx):
@@ -78,25 +85,36 @@ class EvalVisitor(gVisitor):
             "funcCtx": funcCtx
         }
         return
-    
+
     @debug_visit
     def visitFuncCall(self, ctx):
         name = ctx.ID().getText()
         params = self.functions[name]['params']
         funcCtx = self.functions[name]['funcCtx']
-
+        
+        call_id = f"{name}_{sum(1 for call in self.callStack if call.startswith(name))}"
+        self.callStack.append(call_id)
+        self.localVariables[call_id] = {}
+        
         for i, param in enumerate(params):
-            if name not in self.localVariables:
-                self.localVariables[name] = {}
-            self.localVariables[name][param] = self.visit(ctx.expr(i))
-
-        self.funcScope.append(name)
+            self.localVariables[call_id][param] = self.visit(ctx.expr(i))
+        
+        previous_scope = self.funcScope[-1] if self.funcScope else '_global'
+        self.funcScope.append(call_id)
+        
         value = None
-        for statement in funcCtx:
-            value = self.visit(statement)
-            if isinstance(statement, gParser.ReturnStmtContext):
-                return value
-        self.funcScope.pop()
+        try:
+            for statement in funcCtx:
+                value = self.visit(statement)
+                if isinstance(statement, gParser.ReturnStmtContext):
+                    break
+                if value is not None:
+                    break
+        finally:
+            self.funcScope.pop()
+            self.callStack.pop()
+            if not any(call.startswith(name) for call in self.callStack):
+                del self.localVariables[call_id]
         
         return value
     
