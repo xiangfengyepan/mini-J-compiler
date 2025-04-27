@@ -7,9 +7,8 @@ from utils import debug_visit
 class EvalVisitor(gVisitor):
     def __init__(self):
         super().__init__()
-        self.variables = {}
-        self.localVariables = {}
-        self.funcScope = None
+        self.localVariables = {"_global":{}}
+        self.funcScope = []
 
         self.functions = {
             "params": [],
@@ -54,12 +53,13 @@ class EvalVisitor(gVisitor):
     
     @debug_visit
     def visitMainCall(self, ctx):
-        self.funcScope = ctx.MAIN().getText()
+        self.funcScope.append(ctx.MAIN().getText())
+
         for statement in ctx.statement():
             value = self.visit(statement)
             if isinstance(statement, gParser.ReturnStmtContext):
                 return value
-        self.funcScope = None
+        self.funcScope.pop()
         
         return value
     
@@ -87,13 +87,14 @@ class EvalVisitor(gVisitor):
                 self.localVariables[name] = {}
             self.localVariables[name][param] = self.visit(ctx.expr(i))
 
-        self.funcScope = name
+        self.funcScope.append(name)
+
         value = None
         for statement in funcCtx:
             value = self.visit(statement)
             if isinstance(statement, gParser.ReturnStmtContext):
                 return value
-        self.funcScope = None
+        self.funcScope.pop()
         
         return value
     
@@ -108,12 +109,12 @@ class EvalVisitor(gVisitor):
         name = ctx.ID().getText()
         value = self.visit(ctx.expr())
         
-        if self.funcScope is not None:
+        if len(self.funcScope) > 0:
             if self.funcScope not in self.localVariables:
                 self.localVariables[self.funcScope] = {}
-            self.localVariables[self.funcScope][name] = value
+            self.localVariables[self.funcScope[-1]][name] = value
         else: 
-            self.variables[name] = value
+            self.localVariables["_global"][name] = value
         return
 
     @debug_visit
@@ -124,12 +125,12 @@ class EvalVisitor(gVisitor):
     def visitVariable(self, ctx):
         name = ctx.ID().getText()
         var = None
-        if not self.funcScope is None:
-            if name in self.localVariables[self.funcScope]:
+        if len(self.funcScope) > 0:
+            if name in self.localVariables[self.funcScope[-1]]:
                 var = self.localVariables[self.funcScope][name]
 
         if var is None:
-            var = self.variables[name]
+            var = self.localVariables["_global"][name]
         return var
 
     @debug_visit
@@ -184,7 +185,7 @@ class EvalVisitor(gVisitor):
             if ctx.MUL():
                 return np.multiply(lhs, rhs)
             elif ctx.DIV():
-                return np.floor_divide(lhs, rhs)    # divisio entera
+                return np.floor_divide(lhs, rhs)    # integer divition
             elif ctx.PLUS():
                 return np.add(lhs, rhs)
             elif ctx.MINUS():
@@ -192,7 +193,7 @@ class EvalVisitor(gVisitor):
             elif ctx.POW():
                 return np.power(lhs, rhs)
             elif ctx.MOD():
-                return np.mod(rhs, lhs)             # els operands van al reves
+                return np.mod(rhs, lhs)             # reverse operator 
             elif ctx.CONCATE():
                 return np.concatenate((np.atleast_1d(lhs), np.atleast_1d(rhs)))
             elif ctx.HASH():
@@ -210,7 +211,7 @@ class EvalVisitor(gVisitor):
             if ctx.MUL():
                 return np.multiply.reduce(value).astype(np.int32)
             elif ctx.DIV():
-                return np.floor_divide.reduce(value).astype(np.int32)    # divisio entera
+                return np.floor_divide.reduce(value).astype(np.int32)    # integer division
             elif ctx.PLUS():
                 return np.add.reduce(value).astype(np.int32)
             elif ctx.MINUS():
@@ -218,7 +219,7 @@ class EvalVisitor(gVisitor):
             elif ctx.POW():
                 return np.power.reduce(value).astype(np.int32)
             elif ctx.MOD():
-                return np.mod.reduce(value).astype(np.int32)             # els operands van al reves
+                return np.mod.reduce(value).astype(np.int32)             # reverse operators
             elif ctx.CONCATE():
                 return np.array(value)
 
