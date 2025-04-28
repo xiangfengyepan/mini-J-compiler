@@ -1,4 +1,5 @@
 
+import sys
 import numpy as np
 from antlr4.error.ErrorListener import ErrorListener
 class DebugConfig:
@@ -45,7 +46,7 @@ class MyErrorListener(ErrorListener):
 
     def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
         self.hay_error = True
-        print(f"Error en la linia {line}, columna {column}: {msg}")
+        print(f"Error en la linia {line}, columna {column}: {msg}", file=sys.stderr)
 
 class MyPrinter:
     def format_element(elem, print_errors = False):
@@ -94,14 +95,14 @@ class ReturnSignal(np.int32):
 
 def flatten_list(input_list):
     flattened = []
-    
+    if not isinstance(input_list, list):
+        return input_list
+
     for item in input_list:
-        # Si el item es una lista, llamamos recursivamente para aplanarlo
         if isinstance(item, list):
-            flattened.extend(flatten_list(item))  # Aplanamos la lista recursivamente
+            flattened.extend(flatten_list(item))
         else:
-            # Si el item es np.int32 o np.ndarray, lo agregamos
-            flattened.append(np.atleast_1d(item))  # Convertimos a un array de 1D si es necesario
+            flattened.append(np.atleast_1d(item))
 
     return flattened
 

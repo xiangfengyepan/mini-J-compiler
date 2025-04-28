@@ -25,12 +25,12 @@ def main():
         input_stream = InputStream(input('> '))
     elif file_name:
         if not os.path.isfile(file_name):
-            print(f"Error: File '{file_name}' does not exist.")
+            print(f"Error: File '{file_name}' does not exist.", file=sys.stderr)
             return
         with open(file_name, 'r') as file:
             input_stream = InputStream(file.read())
     else:
-        print("Error: no input file specified.")
+        print("Error: no input file specified.", file=sys.stderr)
         return
     
     
@@ -81,8 +81,8 @@ def setParserTree(input_stream):
 
     if lexical_errors:
         for error in lexical_errors:
-            print(f"Lexical error found: '{error.text}' at line {error.line}, column {error.column}")
-        print("Aborting execution due to lexical errors.")
+            print(f"Lexical error found: '{error.text}' at line {error.line}, column {error.column}", file=sys.stderr)
+        print("Aborting execution due to lexical errors.", file=sys.stderr)
         sys.exit(1)
         
     parser = gParser(token_stream)
@@ -97,8 +97,8 @@ def visitParserTree(visitor, parser, tree, is_debug):
     DebugConfig.set_debug_visits(is_debug)
 
     if parser.getNumberOfSyntaxErrors() > 0:
-        print(parser.getNumberOfSyntaxErrors(), 'syntax error')
-        print(tree.toStringTree(recog=parser))
+        print(parser.getNumberOfSyntaxErrors(), 'syntax error', file=sys.stderr)
+        print(tree.toStringTree(recog=parser), file=sys.stderr)
         return None
 
     return process_tree(visitor, tree)
@@ -108,7 +108,7 @@ def process_tree(visitor, tree):
         results = visitor.visit(tree)
         return [r for r in results if r is not None] if results else None
     except Exception as e:
-        print(f"Runtime error: {e}")
+        print(f"Runtime error: {e}", file=sys.stderr)
         return None
 
 if __name__ == '__main__':

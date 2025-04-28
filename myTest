@@ -81,7 +81,7 @@ find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
 
         (
         . venv/bin/activate
-        python3 g.py --test "$jfile" < "$input_file" >> "$error_file" 2>&1
+        python3 g.py --test "$jfile" < "$input_file" 2> "$error_file" 2>&1
         )
 
         if [[ -s "$error_file" ]]; then
