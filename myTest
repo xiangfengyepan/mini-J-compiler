@@ -11,8 +11,7 @@ INPUT_DIR="../tests/"
 JCONSOLE_PATH="../j9.6/bin/jconsole"
 
 EXCLUDE_FILES=(
-  "${INPUT_DIR}programa.j"
-  "${INPUT_DIR}programa2.j"            
+  "${INPUT_DIR}programa*.j"
   "${INPUT_DIR}basics/relational_op.j"
 )
 
@@ -25,7 +24,15 @@ NC='\033[0m'
 # Conver files to LF format
 echo "Converting 2 LF..."
 find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
-    if [[ ! " ${EXCLUDE_FILES[@]} " =~ " ${jfile} " ]]; then
+    should_exclude=false
+    for pattern in "${EXCLUDE_FILES[@]}"; do
+        if [[ "$jfile" == $pattern ]]; then
+            should_exclude=true
+            break
+        fi
+    done
+
+    if [[ "$should_exclude" == false ]]; then
         dos2unix "$jfile" > /dev/null 2>&1
     else
         echo -e "${YELLOW}Skipping: $jfile${NC}"
@@ -35,7 +42,15 @@ echo "Done"
 
 # Generate *.solve with jconsole
 find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
-    if [[ ! " ${EXCLUDE_FILES[@]} " =~ " ${jfile} " ]]; then
+    should_exclude=false
+    for pattern in "${EXCLUDE_FILES[@]}"; do
+        if [[ "$jfile" == $pattern ]]; then
+            should_exclude=true
+            break
+        fi
+    done
+
+    if [[ "$should_exclude" == false ]]; then
         echo "Generating solve: $jfile"
         base_name=$(basename "$jfile" .j)
         dir_name=$(dirname "$jfile")
@@ -49,7 +64,15 @@ echo "Done"
 echo "-----------------------------------------------------------"
 
 find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
-    if [[ ! " ${EXCLUDE_FILES[@]} " =~ " ${jfile} " ]]; then
+    should_exclude=false
+    for pattern in "${EXCLUDE_FILES[@]}"; do
+        if [[ "$jfile" == $pattern ]]; then
+            should_exclude=true
+            break
+        fi
+    done
+
+    if [[ "$should_exclude" == false ]]; then
         base_name=$(basename "$jfile" .j)
         dir_name=$(dirname "$jfile")
         input_file="${dir_name}/${base_name}.inp"
@@ -75,9 +98,17 @@ find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
     rm -f "$error_file"
 done
 echo "-----------------------------------------------------------"
-# Compare *.out vs *.solve, except EXCLUDE_FILES 
+
 find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
-    if [[ ! " ${EXCLUDE_FILES[@]} " =~ " ${jfile} " ]]; then
+    should_exclude=false
+    for pattern in "${EXCLUDE_FILES[@]}"; do
+        if [[ "$jfile" == $pattern ]]; then
+            should_exclude=true
+            break
+        fi
+    done
+
+    if [[ "$should_exclude" == false ]]; then
         base_name=$(basename "$jfile" .j)
         dir_name=$(dirname "$jfile")
         output_file="${dir_name}/${base_name}.out"
