@@ -120,3 +120,8 @@ find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
         echo -e "${YELLOW}Skipping: $jfile${NC}"
     fi
 done
+
+for file in ../tests/programa*.j; do
+    make runfile FILE="$file" 2>&1 | grep -v 'Entering directory' | grep -v 'Leaving directory' | grep -v '. venv/bin/activate'
+done
+

@@ -84,6 +84,10 @@ class ReturnSignal(np.ndarray):
 
     def __repr__(self):
         return f"ReturnSignal({self[0]})"
+    
+    @staticmethod
+    def hasInstance(value):
+        return isinstance(value, ReturnSignal) if not isinstance(value, list) else any(isinstance(item, ReturnSignal) for item in value)
             
 class ReturnSignal(np.int32):
     def __new__(cls, value=None):
@@ -91,6 +95,10 @@ class ReturnSignal(np.int32):
 
     def __repr__(self):
         return f"ReturnSignal({self})"
+    
+    @staticmethod
+    def hasInstance(value):
+        return isinstance(value, ReturnSignal) if not isinstance(value, list) else any(isinstance(item, ReturnSignal) for item in value)
 
 
 def flatten_list(input_list):

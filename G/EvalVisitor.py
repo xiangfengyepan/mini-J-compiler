@@ -34,15 +34,18 @@ class EvalVisitor(gVisitor):
     def visitIfStmt(self, ctx):
         results = []
         cond = self.visit(ctx.expr())
+        while isinstance(cond, list):
+            cond = cond[0]
+
         if cond:
             for child in ctx.statement():
-                if isinstance(child, gParser.ReturnStmtContext):
+                value = self.visit(child)
+                if ReturnSignal.hasInstance(child):
                     print("Return statement found inside if statement")
-                    value = self.visit(child)
                     results.append(ReturnSignal(value))
-                    return results
+                    break
                       
-                results.append(self.visit(child))
+                results.append(value)
 
         return results
 
@@ -51,13 +54,13 @@ class EvalVisitor(gVisitor):
         results = []
         while self.visit(ctx.expr()):
             for child in ctx.statement():
-                if isinstance(child, gParser.ReturnStmtContext):
+                value = self.visit(child) 
+                if ReturnSignal.hasInstance(child):
                     print("Return statement found inside while statement")
-                    value = self.visit(child) 
                     results.append(ReturnSignal(value))
-                    return results
+                    break
                     
-                results.append(self.visit(child))
+                results.append(value)
 
         return results
     
@@ -65,16 +68,16 @@ class EvalVisitor(gVisitor):
     def visitMainCall(self, ctx):
         self.funcScope.append(ctx.MAIN().getText())
         results = []
-        for statement in ctx.statement():
-            value = self.visit(statement)
+        for child in ctx.statement():
+            value = self.visit(child)
             if value is not None:
                 results.append(value)
 
-            if isinstance(statement, gParser.ReturnStmtContext):
-                self.funcScope.pop()
-                return results
+            if ReturnSignal.hasInstance(child):
+                print("Return statement found inside main statement")
+                break
+
         self.funcScope.pop()
-        
         return results
     
     @debug_visit
@@ -112,7 +115,8 @@ class EvalVisitor(gVisitor):
                 value = self.visit(statement)
                 if isinstance(statement, gParser.ReturnStmtContext):
                     break
-                if isinstance(value, ReturnSignal) if not hasattr(value, '__iter__') else any(isinstance(item, ReturnSignal) for item in value):
+                if ReturnSignal.hasInstance(value):
+                    
                     break
         finally:
             self.funcScope.pop()
