@@ -34,7 +34,7 @@ class EvalVisitor(gVisitor):
     def visitIfStmt(self, ctx):
         results = []
         cond = self.visit(ctx.expr())
-        while isinstance(cond, list):
+        while isinstance(cond, list) and cond:
             cond = cond[0]
 
         if cond:
@@ -110,19 +110,16 @@ class EvalVisitor(gVisitor):
         self.funcScope.append(call_id)
         
         value = None
-        try:
-            for statement in funcCtx:
-                value = self.visit(statement)
-                if isinstance(statement, gParser.ReturnStmtContext):
-                    break
-                if ReturnSignal.hasInstance(value):
-                    
-                    break
-        finally:
-            self.funcScope.pop()
-            self.callStack.pop()
-            if not any(call.startswith(name) for call in self.callStack):
-                del self.localVariables[call_id]
+        for child in funcCtx:
+            value = self.visit(child)
+            if ReturnSignal.hasInstance(child) or ReturnSignal.hasInstance(value):
+                print("Return statement found inside function statement")
+                break
+    
+        self.funcScope.pop()
+        self.callStack.pop()
+        if not any(call.startswith(name) for call in self.callStack):
+            del self.localVariables[call_id]
         
         return value
     
