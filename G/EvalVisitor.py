@@ -1,7 +1,6 @@
 import numpy as np
 
 from gVisitor import gVisitor
-from gParser import gParser
 from utils import debug_visit, ReturnSignal
 
 class EvalVisitor(gVisitor):
@@ -19,13 +18,22 @@ class EvalVisitor(gVisitor):
 
     @debug_visit
     def visitProgram(self, ctx):
+        results = self.visit(ctx.statements())
+        return results
+            
+    @debug_visit
+    def visitStatements(self, ctx):
         results = []
         for child in ctx.statement():
             value = self.visit(child)
-            if value is not None:
-                results.append(value)
-        return results
+            if ReturnSignal.hasInstance(child):
+                results.append(ReturnSignal(value))
+                break
+                    
+            results.append(value)
             
+        return results
+    
     @debug_visit
     def visitExprStmt(self, ctx):
         return self.visit(ctx.expr())
@@ -38,13 +46,7 @@ class EvalVisitor(gVisitor):
             cond = cond[0]
 
         if cond:
-            for child in ctx.statement():
-                value = self.visit(child)
-                if ReturnSignal.hasInstance(child):
-                    results.append(ReturnSignal(value))
-                    break
-                      
-                results.append(value)
+            results = self.visit(ctx.statements())
 
         return results
 
@@ -52,27 +54,14 @@ class EvalVisitor(gVisitor):
     def visitWhileStmt(self, ctx):
         results = []
         while self.visit(ctx.expr()):
-            for child in ctx.statement():
-                value = self.visit(child) 
-                if ReturnSignal.hasInstance(child):
-                    results.append(ReturnSignal(value))
-                    break
-                    
-                results.append(value)
+            results.append(self.visit(ctx.statements()))
 
         return results
     
     @debug_visit
     def visitMainCall(self, ctx):
         self.funcScope.append(ctx.MAIN().getText())
-        results = []
-        for child in ctx.statement():
-            value = self.visit(child)
-            if value is not None:
-                results.append(value)
-
-            if ReturnSignal.hasInstance(child):
-                break
+        results = self.visit(ctx.statements())
 
         self.funcScope.pop()
         return results
@@ -83,7 +72,7 @@ class EvalVisitor(gVisitor):
         params = []            
         for param in ctx.ID()[1:]:
             params.append(param.getText())
-        funcCtx = ctx.statement()
+        funcCtx = ctx.statements().statement()
         self.functions[name] = {
             "params": params,
             "funcCtx": funcCtx
@@ -103,7 +92,6 @@ class EvalVisitor(gVisitor):
         for i, param in enumerate(params):
             self.localVariables[call_id][param] = self.visit(ctx.expr(i))
         
-        previous_scope = self.funcScope[-1] if self.funcScope else '_global'
         self.funcScope.append(call_id)
         
         value = None

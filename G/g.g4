@@ -2,24 +2,27 @@ grammar g;
 
 IGNORE : ('program =: 3 : 0' | NEWLINE+ ')' | 'program ' '\'' '\'') -> skip ; // TODO
 
-program: NEWLINE* statement+ EOF;
+program: NEWLINE* statements EOF;
+
+statements: statement+ ;
 
 statement
     : expr endOfStmt                                # exprStmt
     | declaration endOfStmt                         # declarationStmt
     | IF expr DO
-        NEWLINE* statement+ END endOfStmt           # ifStmt
+        NEWLINE* statements END endOfStmt           # ifStmt
     | WHILE expr DO 
-        NEWLINE* statement+ END endOfStmt           # whileStmt
-    | MAIN NEWLINE+ statement+ END endOfStmt        # mainCall
+        NEWLINE* statements END endOfStmt           # whileStmt
+    | MAIN NEWLINE+ statements END endOfStmt        # mainCall
     | FUNCTION ID '(' (ID (';' ID)*)? ')' NEWLINE+
-       statement+ END endOfStmt                     # funcStmt
+       statements END endOfStmt                     # funcStmt
     
     | RETURN expr? endOfStmt                        # returnStmt
 
     | WRITE STRING endOfStmt                        # writeStmt
-    
+
     ;
+
 
 endOfStmt
     : NEWLINE+ 
