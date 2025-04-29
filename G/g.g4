@@ -16,6 +16,9 @@ statement
        statement+ END endOfStmt                     # funcStmt
     
     | RETURN expr? endOfStmt                        # returnStmt
+
+    | WRITE STRING endOfStmt                        # writeStmt
+    
     ;
 
 endOfStmt
@@ -51,6 +54,8 @@ expr
     | INTVAL+                                       # value
     | ID                                            # variable
     ;
+
+WRITE: 'write' ;
 
 MAIN: 'main' ;
 FUNCTION: 'function' ;

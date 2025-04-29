@@ -56,8 +56,9 @@ class MyPrinter:
             result = " ".join(e for e in [MyPrinter.format_element(e) for e in elem] if e is not None)
             return result if result else None
         
-        elif print_errors and isinstance(elem, str):
-            return elem
+        elif isinstance(elem, str):
+            if print_errors or "error" not in elem:
+                return elem
         return None
     
     def my_print(output_list):

@@ -41,7 +41,6 @@ class EvalVisitor(gVisitor):
             for child in ctx.statement():
                 value = self.visit(child)
                 if ReturnSignal.hasInstance(child):
-                    print("Return statement found inside if statement")
                     results.append(ReturnSignal(value))
                     break
                       
@@ -56,7 +55,6 @@ class EvalVisitor(gVisitor):
             for child in ctx.statement():
                 value = self.visit(child) 
                 if ReturnSignal.hasInstance(child):
-                    print("Return statement found inside while statement")
                     results.append(ReturnSignal(value))
                     break
                     
@@ -74,7 +72,6 @@ class EvalVisitor(gVisitor):
                 results.append(value)
 
             if ReturnSignal.hasInstance(child):
-                print("Return statement found inside main statement")
                 break
 
         self.funcScope.pop()
@@ -91,7 +88,7 @@ class EvalVisitor(gVisitor):
             "params": params,
             "funcCtx": funcCtx
         }
-        return
+        return 
 
     @debug_visit
     def visitFuncCall(self, ctx):
@@ -113,7 +110,6 @@ class EvalVisitor(gVisitor):
         for child in funcCtx:
             value = self.visit(child)
             if ReturnSignal.hasInstance(child) or ReturnSignal.hasInstance(value):
-                print("Return statement found inside function statement")
                 break
     
         self.funcScope.pop()
@@ -128,6 +124,10 @@ class EvalVisitor(gVisitor):
         if ctx.expr():
             return ReturnSignal(self.visit(ctx.expr()))
         return ReturnSignal()
+
+    @debug_visit
+    def visitWriteStmt(self, ctx):
+        return ctx.STRING().getText()
 
     @debug_visit
     def visitDeclaration(self, ctx):

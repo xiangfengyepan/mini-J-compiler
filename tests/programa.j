@@ -1,22 +1,12 @@
-NB. Programa J correcto con IF y WHILE
+myArray =: 3 9 1 7 2
 
-program =: 3 : 0
-    x =. 0          NB. Inicializamos x en 0
-    y =. 5          NB. Inicializamos y en 5
-
-    while. x < y do.
-        NB. Dentro del bucle, incrementamos x
-        x =. x + 1
+i =: 0
+newArr =: i.0
+while. i < #myArray do.
+    if. 2 | (i { myArray) = 0 do.
+        newArr =: newArr , (i { myArray)
     end.
+    i =: i + 1
+end.
 
-    NB. Ahora x debería ser igual a y
-    result =. 0
-    if. x = y do.
-        result =. 1  NB. Si x igual a y, ponemos result a 1
-    end.
-
-    NB. Devolver resultados como una lista
-    x , y , result
-)
-
-program ''   NB. Ejecutar el programa
+newArr
