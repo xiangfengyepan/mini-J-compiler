@@ -19,7 +19,7 @@ statement
     
     | RETURN expr? endOfStmt                        # returnStmt
 
-    | WRITE STRING endOfStmt                        # writeStmt
+    | WRITE (STRING|FSTRING) endOfStmt              # writeStmt
 
     ;
 
@@ -101,6 +101,14 @@ ID        : ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
 
 // Strings (in quotes) with escape sequences
 STRING    : '"' ( ESC_SEQ | ~('\\'|'"') )* '"' ;
+
+FSTRING  : 'f' '"' ( FCHAR | ESC_SEQ | INTERPOLATION )* '"' ;
+
+fragment
+FCHAR : ~[\\{"\r\n];
+
+fragment
+INTERPOLATION : '{' .*? '}' ;
 
 fragment
 ESC_SEQ   : '\\' ('b'|'t'|'n'|'f'|'r'|'"'|'\''|'\\') ;

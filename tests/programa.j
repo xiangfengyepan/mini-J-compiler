@@ -1,12 +1,18 @@
-myArray =: 3 9 1 7 2
-
-i =: 0
-newArr =: i.0
-while. i < #myArray do.
-    if. 2 | (i { myArray) = 0 do.
-        newArr =: newArr , (i { myArray)
+function isPrime(n)
+    if. n < 2 do.
+        return 0
     end.
-    i =: i + 1
+    i =: 2
+    while. i * i <= n do.
+        if. i | n = 0 do.
+            return 0
+        end.
+        i =: i + 1
+    end.
+    return 1
 end.
 
-newArr
+main 
+    write f"2 es primer? {isPrime(2)}"
+
+end.

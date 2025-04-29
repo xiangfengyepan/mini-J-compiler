@@ -1,5 +1,8 @@
 import numpy as np
-
+import re
+from antlr4 import InputStream, CommonTokenStream
+from gLexer import gLexer
+from gParser import gParser
 from gVisitor import gVisitor
 from utils import debug_visit, ReturnSignal
 
@@ -115,7 +118,26 @@ class EvalVisitor(gVisitor):
 
     @debug_visit
     def visitWriteStmt(self, ctx):
-        return ctx.STRING().getText()
+        if ctx.STRING():
+            return ctx.STRING().getText()
+        elif ctx.FSTRING():
+            raw = ctx.FSTRING().getText()[2:-1]
+            parts = re.split(r'({.*?})', raw)
+            result = ""
+            for part in parts:
+                if part.startswith("{") and part.endswith("}"):
+                    expr_text = part[1:-1]
+                    input_stream = InputStream(expr_text)
+                    lexer = gLexer(input_stream)
+                    token_stream = CommonTokenStream(lexer)
+                    parser = gParser(token_stream)
+                    tree = parser.expr()
+                    value = self.visit(tree)
+                    result += str(value)
+                else:
+                    result += part
+            print(result)
+            return result
 
     @debug_visit
     def visitDeclaration(self, ctx):
