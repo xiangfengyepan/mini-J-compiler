@@ -10,7 +10,7 @@ end.
 
 main
     a =: 1
-    while. a <> 7 do.
+    while. a <> 20 do.
         fibo(a)
         a =: a + 1
     end.

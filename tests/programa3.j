@@ -95,16 +95,6 @@ end.
 
 main
     myArray =: 3 9 1 7 2
-    result =: sumArray(myArray)
-    maxValue =: maxArray(myArray)
-    minValue =: minArray(myArray)
-    meanValue =: meanArray(myArray)
-    reversed =: reverseArray(myArray)
-    evens =: filterEven(myArray)
-    squares =: mapSquare(myArray)
-    contains5 =: arrayContains(myArray; 5)
-    contains9 =: arrayContains(myArray; 9)
-
     n =: 20
     i =: 0
     primes =: i.0
@@ -115,25 +105,15 @@ main
         i =: i + 1
     end.
 
-
-    write "Sum of array:"
-    result
-    write "Max value:"
-    maxValue
-    write "Min value:"
-    minValue
-    write "Mean value:"
-    meanValue
-    write "Reversed array:"
-    reversed
-    write "Even numbers:"
-    evens
-    write "Squares of elements:"
-    squares
-    write "Primes up to 20:"
-    primes
-    write "Array contains 5:"
-    contains5
-    write "Array contains 9:"
-    contains9
+    write f"Sum of array: {sumArray(myArray)}"
+    write f"Max value: {maxArray(myArray)}"
+    write f"Min value: {minArray(myArray)}"
+    write f"Mean value: {meanArray(myArray)}"
+    write f"Reversed array: {reverseArray(myArray)}"
+    write f"Even numbers: {filterEven(myArray)}"
+    write f"Squares of elements: {mapSquare(myArray)}"
+    write f"Primes up to 20: {primes}"
+    write f"Array contains 5: {arrayContains(myArray; 5)}"
+    write f"Array contains 9: {arrayContains(myArray; 9)}"
 end.
+
