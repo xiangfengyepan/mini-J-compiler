@@ -13,6 +13,6 @@ function isPrime(n)
 end.
 
 main 
-    write f"2 es primer? {isPrime 2}"
+    write f"2 es primer? {isPrime(2)}"
 
 end.
