@@ -136,7 +136,6 @@ class EvalVisitor(gVisitor):
                     result += str(value)
                 else:
                     result += part
-            print(result)
             return result
 
     @debug_visit

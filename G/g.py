@@ -45,7 +45,6 @@ def main():
         if not is_test and is_tree:
             visitParserTree(treeVisitor, parser, tree, False)
         filtered_output = visitParserTree(evalVisitor, parser, tree, is_debug)
-
         filtered_output = flatten_list(filtered_output)
         
         if filtered_output and is_test:

@@ -105,15 +105,15 @@ main
         i =: i + 1
     end.
 
-    write f"Sum of array: {sumArray(myArray)}"
-    write f"Max value: {maxArray(myArray)}"
-    write f"Min value: {minArray(myArray)}"
-    write f"Mean value: {meanArray(myArray)}"
-    write f"Reversed array: {reverseArray(myArray)}"
-    write f"Even numbers: {filterEven(myArray)}"
-    write f"Squares of elements: {mapSquare(myArray)}"
-    write f"Primes up to 20: {primes}"
-    write f"Array contains 5: {arrayContains(myArray; 5)}"
+    NB. write f"Sum of array: {sumArray(myArray)}"
+    NB. write f"Max value: {maxArray(myArray)}"
+    NB. write f"Min value: {minArray(myArray)}"
+    NB. write f"Mean value: {meanArray(myArray)}"
+    NB. write f"Reversed array: {reverseArray(myArray)}"
+    NB. write f"Even numbers: {filterEven(myArray)}"
+    NB. write f"Squares of elements: {mapSquare(myArray)}"
+    NB. write f"Primes up to 20: {primes}"
+    NB. write f"Array contains 5: {arrayContains(myArray; 5)}"
     write f"Array contains 9: {arrayContains(myArray; 9)}"
 end.
 
