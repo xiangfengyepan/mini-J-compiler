@@ -15,11 +15,14 @@ endOfStmt
     | EOF
     ;
 
-declaration: ID ASSIGN expr;
+declaration: ID ASSIGN (expr|operators);
+
+operators:
+    // TODO
+;
 
 expr
     : '(' expr ')'                                  # parent
-
     | op=(IDENTITY|HASH|ARANGE) expr                # unary
     | op=(NEG|PLUS)  expr                           # unary
 
@@ -41,6 +44,8 @@ expr
     | INTVAL+                                       # value
     | ID                                            # variable
     ;
+
+
 
 ASSIGN      : '=:';
 EQUAL       : '=' ;
