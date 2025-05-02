@@ -1,7 +1,5 @@
 grammar g;
 
-IGNORE : ('program =: 3 : 0' | NEWLINE+ ')' | 'program ' '\'' '\'') -> skip ; // TODO
-
 program: NEWLINE* statements EOF;
 
 statements: statement+ ;
@@ -9,18 +7,6 @@ statements: statement+ ;
 statement
     : expr endOfStmt                                # exprStmt
     | declaration endOfStmt                         # declarationStmt
-    | IF expr DO
-        NEWLINE* statements END endOfStmt           # ifStmt
-    | WHILE expr DO 
-        NEWLINE* statements END endOfStmt           # whileStmt
-    | MAIN NEWLINE+ statements END endOfStmt        # mainCall
-    | FUNCTION ID '(' (ID (';' ID)*)? ')' NEWLINE+
-       statements END endOfStmt                     # funcStmt
-    
-    | RETURN expr? endOfStmt                        # returnStmt
-
-    | WRITE STRING endOfStmt                        # writeStmt
-
     ;
 
 
@@ -33,8 +19,6 @@ declaration: ID ASSIGN expr;
 
 expr
     : '(' expr ')'                                  # parent
-    
-    | ID '(' (expr (';' expr)*)? ')'                # funcCall
 
     | op=(IDENTITY|HASH|ARANGE) expr                # unary
     | op=(NEG|PLUS)  expr                           # unary
@@ -58,18 +42,7 @@ expr
     | ID                                            # variable
     ;
 
-WRITE: 'write' ;
-
-MAIN: 'main' ;
-FUNCTION: 'function' ;
-RETURN: 'return' ;
-
-IF: 'if.' ;
-END: 'end.' ;
-WHILE: 'while.' ;
-DO: 'do.' ;
-
-ASSIGN      : '=:' | '=.'; // TODO
+ASSIGN      : '=:';
 EQUAL       : '=' ;
 NE          : '<>' ;
 LT          : '<' ;

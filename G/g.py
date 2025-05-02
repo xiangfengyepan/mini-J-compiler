@@ -5,7 +5,7 @@ from gParser import gParser
 from EvalVisitor import EvalVisitor
 from TreeVisitor import TreeVisitor
 
-from utils import DebugConfig, MyErrorListener, MyPrinter, flatten_list
+from utils import DebugConfig, MyErrorListener, MyPrinter
 
 def main():
     args = sys.argv[1:]
@@ -19,7 +19,6 @@ def main():
     is_debug = "--debug" in args
     is_interactive = "--ia" in args
     is_tree = "--tree" in args
-
 
     if is_interactive: 
         input_stream = InputStream(input('> '))
@@ -45,8 +44,6 @@ def main():
         if not is_test and is_tree:
             visitParserTree(treeVisitor, parser, tree, False)
         filtered_output = visitParserTree(evalVisitor, parser, tree, is_debug)
-
-        filtered_output = flatten_list(filtered_output)
         
         if filtered_output and is_test:
             base_name = os.path.splitext(file_name)[0]
@@ -62,8 +59,6 @@ def main():
     
         break
                 
-        
-
 def setParserTree(input_stream):
     error_listener = MyErrorListener()
     

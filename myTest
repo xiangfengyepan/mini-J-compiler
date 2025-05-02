@@ -12,7 +12,7 @@ JCONSOLE_PATH="../j9.6/bin/jconsole"
 
 EXCLUDE_FILES=(
   "${INPUT_DIR}programa*.j"
-  "${INPUT_DIR}basics/relational_op.j"
+#   "${INPUT_DIR}basics/relational_op.j"
 )
 
 # Definir colores ANSI
