@@ -23,24 +23,22 @@ operators:
 
 expr
     : '(' expr ')'                                  # parent
-    | op=(IDENTITY|HASH|ARANGE) expr                # unary
-    | op=(NEG|PLUS)  expr                           # unary
+    | op=(IDENTITY|HASH|ARANGE|
+        NEG|PLUS) expr                              # unary
 
     | <assoc=right> expr 
-        op=(CONCATE|HASH|INDEX) FLIP? expr          # aritmetic
-    | <assoc=right> expr 
-        op=(PLUS|MINUS|MUL|DIV|POW|MOD) FLIP? expr  # aritmetic
+        op=(CONCATE|HASH|INDEX|
+        PLUS|MINUS|MUL|DIV|POW|MOD
+        |EQUAL|NE|LT|GT|LE|GE) FLIP? expr           # aritmetic
 
-    | op=(CONCATE|HASH|INDEX) DOUBLE expr           # aritmetic
-    | op=(MUL|DIV|POW|MOD) DOUBLE expr              # aritmetic
-    | op=(PLUS|MINUS) DOUBLE expr                   # aritmetic
+    | op=(CONCATE|HASH|INDEX|
+        MUL|DIV|POW|MOD|
+            PLUS|MINUS) DOUBLE expr                 # aritmetic
 
-    | op=(CONCATE|HASH|INDEX) FOLD expr             # fold
-    | op=(MUL|DIV|POW|MOD) FOLD expr                # fold
-    | op=(PLUS|MINUS) FOLD expr                     # fold
+    | op=(CONCATE|HASH|INDEX|
+        MUL|DIV|POW|MOD|
+        PLUS|MINUS) FOLD expr                       # fold
 
-    | <assoc=right> 
-        expr op=(EQUAL|NE|LT|GT|LE|GE) expr         # relational
     | INTVAL+                                       # value
     | ID                                            # variable
     ;

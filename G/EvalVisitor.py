@@ -44,24 +44,6 @@ class EvalVisitor(gVisitor):
         return var
 
     @debug_visit
-    def visitRelational(self, ctx):
-        lhs = self.visit(ctx.expr(0))
-        rhs = self.visit(ctx.expr(1))
-
-        if ctx.EQUAL():
-            return np.equal(lhs, rhs).astype(np.int32)
-        elif ctx.NE():
-            return np.not_equal(lhs, rhs).astype(np.int32)
-        elif ctx.LT():
-            return np.less(lhs, rhs).astype(np.int32)
-        elif ctx.GT():
-            return np.greater(lhs, rhs).astype(np.int32)
-        elif ctx.LE():
-            return np.less_equal(lhs, rhs).astype(np.int32)
-        elif ctx.GE():
-            return np.greater_equal(lhs, rhs).astype(np.int32)
-
-    @debug_visit
     def visitUnary(self, ctx):
         value = self.visit(ctx.expr())
         if ctx.NEG():
@@ -110,7 +92,18 @@ class EvalVisitor(gVisitor):
                 return np.array(rhs)[np.array(lhs, dtype=bool)]
             elif ctx.INDEX():
                 return np.array(rhs)[np.array(lhs)]
-
+            elif ctx.EQUAL():
+                return np.equal(lhs, rhs).astype(np.int32)
+            elif ctx.NE():
+                return np.not_equal(lhs, rhs).astype(np.int32)
+            elif ctx.LT():
+                return np.less(lhs, rhs).astype(np.int32)
+            elif ctx.GT():
+                return np.greater(lhs, rhs).astype(np.int32)
+            elif ctx.LE():
+                return np.less_equal(lhs, rhs).astype(np.int32)
+            elif ctx.GE():
+                return np.greater_equal(lhs, rhs).astype(np.int32)
         except Exception as e:
             return f"error: {str(e)}"
     
