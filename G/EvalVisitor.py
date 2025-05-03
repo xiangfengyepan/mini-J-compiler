@@ -96,6 +96,90 @@ class EvalVisitor(gVisitor):
         # func = self.visit(ctx.operators())
         print(name, ctx.operators().getText())
         # self.functions.addOperator(name, func, arity=2)
+        
+    @debug_visit
+    def visitBinaryOperators(self, ctx):
+        try:
+            if ctx.MUL():
+                return lambda lhs, rhs: np.multiply(lhs, rhs)
+            elif ctx.DIV():
+                return lambda lhs, rhs: np.floor_divide(lhs, rhs)
+            elif ctx.PLUS():
+                return lambda lhs, rhs: np.add(lhs, rhs)
+            elif ctx.MINUS():
+                return lambda lhs, rhs: np.subtract(lhs, rhs)
+            elif ctx.POW():
+                return lambda lhs, rhs: np.power(lhs, rhs)
+            elif ctx.MOD():
+                return lambda lhs, rhs: np.mod(rhs, lhs)
+            elif ctx.CONCATE():
+                return lambda lhs, rhs: np.concatenate((np.atleast_1d(lhs), np.atleast_1d(rhs)))
+            elif ctx.HASH():
+                return lambda lhs, rhs: np.array(rhs)[np.array(lhs, dtype=bool)]
+            elif ctx.INDEX():
+                return lambda lhs, rhs: np.array(rhs)[np.array(lhs)]
+            elif ctx.EQUAL():
+                return lambda lhs, rhs: np.equal(lhs, rhs).astype(np.int32)
+            elif ctx.NE():
+                return lambda lhs, rhs: np.not_equal(lhs, rhs).astype(np.int32)
+            elif ctx.LT():
+                return lambda lhs, rhs: np.less(lhs, rhs).astype(np.int32)
+            elif ctx.GT():
+                return lambda lhs, rhs: np.greater(lhs, rhs).astype(np.int32)
+            elif ctx.LE():
+                return lambda lhs, rhs: np.less_equal(lhs, rhs).astype(np.int32)
+            elif ctx.GE():
+                return lambda lhs, rhs: np.greater_equal(lhs, rhs).astype(np.int32)
+            
+            elif ctx.FLIP():
+                return lambda lhs, rhs: (rhs, lhs)
+        except Exception as e:
+            return f"error: {str(e)}"
+
+    @debug_visit
+    def visitUnaryOperators(self, ctx):
+        try:
+            if ctx.POWD():
+                return lambda x: np.power(x, x)
+            elif ctx.MULD():
+                return lambda x: np.multiply(x, x)
+            elif ctx.PLUSD():
+                return lambda x: np.add(x, x)
+            elif ctx.MINUSD():
+                return lambda x: np.subtract(x, x)
+            elif ctx.NEG():
+                return lambda x: -x
+            elif ctx.HASH():
+                return lambda x: np.int32(np.atleast_1d(x).size)
+            elif ctx.ARANGE():
+                return lambda x: np.arange(x).astype(np.int32)
+            elif ctx.PLUS():
+                return lambda x: x
+            elif ctx.IDENTITY():
+                return lambda x: x
+        except Exception as e:
+            return f"error: {str(e)}"
+
+        
+    @debug_visit
+    def visitFoldOperators(self, ctx):
+        try:
+            if ctx.MUL():
+                return lambda x: np.multiply.reduce(x).astype(np.int32)
+            elif ctx.DIV():
+                return lambda x: np.floor_divide.reduce(x).astype(np.int32)
+            elif ctx.PLUS():
+                return lambda x: np.add.reduce(x).astype(np.int32)
+            elif ctx.MINUS():
+                return lambda x: np.subtract.reduce(x).astype(np.int32)
+            elif ctx.POW():
+                return lambda x: np.power.reduce(x).astype(np.int32)
+            elif ctx.MOD():
+                return lambda x: np.mod.reduce(x).astype(np.int32)
+            elif ctx.CONCATE():
+                return lambda x: np.array(x)
+        except Exception as e:
+            return f"error: {str(e)}"
 
     @debug_visit
     def visitParent(self, ctx):
@@ -112,13 +196,6 @@ class EvalVisitor(gVisitor):
         name = ctx.ID().getText()
         print(name, ctx.expr().getText())
         return
-    
-    @debug_visit
-    def visitBinaryFuncCall(self, ctx):
-        name = ctx.ID().getText()
-        print(name, ctx.expr().getText())
-
-        return
 
     @debug_visit
     def visitValue(self, ctx):
@@ -130,94 +207,34 @@ class EvalVisitor(gVisitor):
 
     @debug_visit
     def visitBinaryAritmetic(self, ctx):
-        lhs = self.visit(ctx.expr(0)) if ctx.expr(0) else None
-        rhs = self.visit(ctx.expr(1)) if ctx.expr(1) else None
+        lhs = self.visit(ctx.expr(0))
+        rhs = self.visit(ctx.expr(1))
 
-        rhs = lhs if rhs is None else rhs
-
-        if ctx.binaryOperators() and ctx.binaryOperators().FLIP():
-            lhs, rhs = rhs, lhs
+        if ctx.binaryOperators().FLIP():
+            lhs, rhs = rhs, lhs 
 
         try:
-            if ctx.binaryOperators().MUL():
-                return np.multiply(lhs, rhs)
-            elif ctx.binaryOperators().DIV():
-                return np.floor_divide(lhs, rhs)    # integer divition
-            elif ctx.binaryOperators().PLUS():
-                return np.add(lhs, rhs)
-            elif ctx.binaryOperators().MINUS():
-                return np.subtract(lhs, rhs)
-            elif ctx.binaryOperators().POW():
-                return np.power(lhs, rhs)
-            elif ctx.binaryOperators().MOD():
-                return np.mod(rhs, lhs)             # reverse operator 
-            elif ctx.binaryOperators().CONCATE():
-                return np.concatenate((np.atleast_1d(lhs), np.atleast_1d(rhs)))
-            elif ctx.binaryOperators().HASH():
-                return np.array(rhs)[np.array(lhs, dtype=bool)]
-            elif ctx.binaryOperators().INDEX():
-                return np.array(rhs)[np.array(lhs)]
-            elif ctx.binaryOperators().EQUAL():
-                return np.equal(lhs, rhs).astype(np.int32)
-            elif ctx.binaryOperators().NE():
-                return np.not_equal(lhs, rhs).astype(np.int32)
-            elif ctx.binaryOperators().LT():
-                return np.less(lhs, rhs).astype(np.int32)
-            elif ctx.binaryOperators().GT():
-                return np.greater(lhs, rhs).astype(np.int32)
-            elif ctx.binaryOperators().LE():
-                return np.less_equal(lhs, rhs).astype(np.int32)
-            elif ctx.binaryOperators().GE():
-                return np.greater_equal(lhs, rhs).astype(np.int32)
+            operator = self.visit(ctx.binaryOperators())
+            return operator(lhs, rhs)
         except Exception as e:
             return f"error: {str(e)}"
     
     @debug_visit
     def visitUnaryAritmetic(self, ctx):
-        lhs = self.visit(ctx.expr())
-        rhs = lhs
+        x = self.visit(ctx.expr())
 
         try:
-            if ctx.unaryOperators().POWD():
-                return np.power(lhs, rhs)
-            elif ctx.unaryOperators().MULD():
-                return np.multiply(lhs, rhs)
-            elif ctx.unaryOperators().PLUSD():
-                return np.add(lhs, rhs)
-            elif ctx.unaryOperators().MINUSD():
-                return np.subtract(lhs, rhs)
-            elif ctx.unaryOperators().NEG():
-                return -lhs
-            elif ctx.unaryOperators().HASH():
-                return np.int32(np.atleast_1d(lhs).size)
-            elif ctx.unaryOperators().ARANGE():
-                return np.int32(np.arange(lhs))
-            elif ctx.unaryOperators().PLUS():
-                return lhs
-            elif ctx.unaryOperators().IDENTITY():
-                return lhs
-        
+            operator = self.visit(ctx.unaryOperators())
+            return operator(x)
         except Exception as e:
             return f"error: {str(e)}"
     
     @debug_visit
     def visitFoldAritmetic(self, ctx):
         value = self.visit(ctx.expr())
-        try:
-            if ctx.unaryFold().MUL():
-                return np.multiply.reduce(value).astype(np.int32)
-            elif ctx.unaryFold().DIV():
-                return np.floor_divide.reduce(value).astype(np.int32)    # integer division
-            elif ctx.unaryFold().PLUS():
-                return np.add.reduce(value).astype(np.int32)
-            elif ctx.unaryFold().MINUS():
-                return np.subtract.reduce(value).astype(np.int32)
-            elif ctx.unaryFold().POW():
-                return np.power.reduce(value).astype(np.int32)
-            elif ctx.unaryFold().MOD():
-                return np.mod.reduce(value).astype(np.int32)             # reverse operators
-            elif ctx.unaryFold().CONCATE():
-                return np.array(value)
 
+        try:
+            operator = self.visit(ctx.foldOperators())
+            return operator(value)
         except Exception as e:
             return f"error: {str(e)}"
