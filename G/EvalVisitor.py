@@ -42,7 +42,7 @@ class OperatorRegistry:
             # '-:': lambda x: np.subtract(x, x),
         }
 
-    def addOperator(self, name, func, arity=2):
+    def addOperator(self, name, func, arity):
         if arity == 1:
             self.unaryOperators[name] = func
         elif arity == 2:
@@ -56,7 +56,7 @@ class OperatorRegistry:
     #     else:
     #         raise ValueError(f"Operador {operator_name} no encontrado.")
 
-    def getOperator(self, name, arity=2):
+    def getOperator(self, name, arity):
         if arity == 1:
             return self.unaryOperators.get(name)
         elif arity == 2:
@@ -85,11 +85,17 @@ class EvalVisitor(gVisitor):
         return value
 
     @debug_visit
-    def visitDeclaration(self, ctx):
+    def visitExprDeclaration(self, ctx):
         name = ctx.ID().getText()
         value = self.visit(ctx.expr())
         self.variables[name] = value
 
+    @debug_visit
+    def visitOperatorDeclaration(self, ctx):
+        name = ctx.ID().getText()
+        # func = self.visit(ctx.operators())
+        print(name, ctx.operators().getText())
+        # self.functions.addOperator(name, func, arity=2)
 
     @debug_visit
     def visitParent(self, ctx):
@@ -100,6 +106,19 @@ class EvalVisitor(gVisitor):
         name = ctx.ID().getText()
         var = self.variables[name]
         return var
+    
+    @debug_visit
+    def visitUnaryFuncCall(self, ctx):
+        name = ctx.ID().getText()
+        print(name, ctx.expr().getText())
+        return
+    
+    @debug_visit
+    def visitBinaryFuncCall(self, ctx):
+        name = ctx.ID().getText()
+        print(name, ctx.expr().getText())
+
+        return
 
     @debug_visit
     def visitValue(self, ctx):

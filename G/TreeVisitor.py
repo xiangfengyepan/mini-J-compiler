@@ -21,21 +21,21 @@ class TreeVisitor(gVisitor):
         print('  ' * self.nivell + f"{var_name}")
         return
 
-    @debug_visit
-    def visitRelational(self, ctx):
-        print('  ' * self.nivell + f"{ctx.op.text}")
-        self.nivell += 1
-        self.visitChildren(ctx)
-        self.nivell -= 1
-        return
+    # @debug_visit
+    # def visitRelational(self, ctx):
+    #     print('  ' * self.nivell + f"{ctx.op.text}")
+    #     self.nivell += 1
+    #     self.visitChildren(ctx)
+    #     self.nivell -= 1
+    #     return
 
-    @debug_visit
-    def visitUnary(self, ctx):
-        print('  ' * self.nivell + f"{ctx.op.text}")
-        self.nivell += 1
-        self.visitChildren(ctx)
-        self.nivell -= 1
-        return
+    # @debug_visit
+    # def visitUnary(self, ctx):
+    #     print('  ' * self.nivell + f"{ctx.op.text}")
+    #     self.nivell += 1
+    #     self.visitChildren(ctx)
+    #     self.nivell -= 1
+    #     return
 
     @debug_visit
     def visitValue(self, ctx):
@@ -46,25 +46,25 @@ class TreeVisitor(gVisitor):
             print("  " * self.nivell + " ".join(values))
         return
 
-    @debug_visit
-    def visitAritmetic(self, ctx):
-        op = ctx.op.text
-        double = ctx.DOUBLE().getText() if ctx.DOUBLE() else ""
-        flip = ctx.FLIP().getText() if ctx.FLIP() else ""
-        print('  ' * self.nivell + op + double + flip)
+    # @debug_visit
+    # def visitAritmetic(self, ctx):
+    #     op = ctx.op.text
+    #     double = ctx.DOUBLE().getText() if ctx.DOUBLE() else ""
+    #     flip = ctx.FLIP().getText() if ctx.FLIP() else ""
+    #     print('  ' * self.nivell + op + double + flip)
 
-        self.nivell += 1
-        self.visitChildren(ctx)
-        self.nivell -= 1
-        return
+    #     self.nivell += 1
+    #     self.visitChildren(ctx)
+    #     self.nivell -= 1
+    #     return
 
-    @debug_visit
-    def visitFold(self, ctx):
-        op = ctx.op.text
-        fold = ctx.FOLD().getText()
-        print('  ' * self.nivell + op + fold)
+    # @debug_visit
+    # def visitFold(self, ctx):
+    #     op = ctx.op.text
+    #     fold = ctx.FOLD().getText()
+    #     print('  ' * self.nivell + op + fold)
         
-        self.nivell += 1
-        self.visitChildren(ctx)
-        self.nivell -= 1
-        return
+    #     self.nivell += 1
+    #     self.visitChildren(ctx)
+    #     self.nivell -= 1
+    #     return

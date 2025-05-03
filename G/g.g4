@@ -9,13 +9,23 @@ statement
     | declaration endOfStmt                         # declarationStmt
     ;
 
-
 endOfStmt
     : NEWLINE+ 
     | EOF
     ;
 
-declaration: ID ASSIGN expr;
+declaration
+    : ID ASSIGN expr                                # exprDeclaration
+    | ID ASSIGN operators                           # operatorDeclaration
+    ;
+
+operators
+    : unaryOperators
+    | binaryOperators
+    | unaryFold
+    | expr
+    | operators operators
+    ;
 
 unaryOperators
     : (POWD|MULD|PLUSD|MINUSD|
@@ -25,13 +35,13 @@ unaryOperators
 unaryFold
     : (MUL|DIV|POW|MOD|
         PLUS|MINUS) FOLD
-;
+    ;
 
-binaryOperators:
-    (CONCATE|HASH|INDEX|
-            PLUS|MINUS|MUL|DIV|POW|MOD
-            |EQUAL|NE|LT|GT|LE|GE) FLIP?    # binaryOp
-;
+binaryOperators
+    : (CONCATE|HASH|INDEX|
+        PLUS|MINUS|MUL|DIV|POW|MOD|
+        EQUAL|NE|LT|GT|LE|GE) FLIP?
+    ;
 
 expr
     : '(' expr ')'                                  # parent
@@ -44,10 +54,11 @@ expr
 
     | INTVAL+                                       # value
     | ID                                            # variable
-    // | op=( IDENTITY|HASH|ARANGE|
-    //         NEG|PLUS|ID) expr?                      # unaryFuncCall                                     
-    // | expr op=( IDENTITY|HASH|ARANGE|
-    //         NEG|PLUS|ID) expr                       # binaryFuncCall     
+
+    | ID expr                                       # unaryFuncCall 
+
+    | <assoc=right> expr ID expr                    # binaryFuncCall   
+
     ;
 
 
