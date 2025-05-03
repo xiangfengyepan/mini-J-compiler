@@ -16,15 +16,14 @@ endOfStmt
 
 declaration
     : ID ASSIGN expr                                # exprDeclaration
-    | ID ASSIGN operators                           # operatorDeclaration
+    | ID ASSIGN operators+                          # operatorDeclaration
     ;
 
 operators
     : unaryOperators
     | binaryOperators
-    | unaryFold
+    | foldOperators
     | expr
-    | operators operators
     ;
 
 unaryOperators
@@ -32,7 +31,7 @@ unaryOperators
         IDENTITY|HASH|ARANGE|
         NEG|PLUS)    
     ;              
-unaryFold
+foldOperators
     : (MUL|DIV|POW|MOD|
         PLUS|MINUS) FOLD
     ;
@@ -50,14 +49,12 @@ expr
 
     | unaryOperators expr                           # unaryAritmetic
 
-    | unaryFold expr                                # foldAritmetic
+    | foldOperators expr                                # foldAritmetic
 
     | INTVAL+                                       # value
     | ID                                            # variable
 
-    | ID expr                                       # unaryFuncCall 
-
-    | <assoc=right> expr ID expr                    # binaryFuncCall   
+    | ID expr                                       # unaryFuncCall  
 
     ;
 
