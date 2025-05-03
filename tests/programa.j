@@ -1,12 +1,4 @@
-a =: 5 - 2           NB. results: 3
-b =: 2 * 3           NB. results: 6
-c =: 6 % 2           NB. results: 3     
-d =: 2 | 7           NB. results: 1 
-e =: 2 ^ 3           NB. results: 8
 
-NB. print results
-a
-b
-c 
-d
+NB. Operaciones con adverbios y listas
+e =: +/ (2 4 6 8) * 3       NB. results: 60 (Multiplicación de lista por 3, luego suma de los elementos)
 e
