@@ -18,11 +18,13 @@ endOfStmt
 declaration: ID ASSIGN expr;
 
 unaryOperators
-    : //(POWD|MULD|PLUSD|MINUSD|
-    (IDENTITY|HASH|ARANGE|
-        NEG|PLUS)                   # unaryOp
-    | (MUL|DIV|POW|MOD|
-            PLUS|MINUS) FOLD        # foldOp
+    : (POWD|MULD|PLUSD|MINUSD|
+        IDENTITY|HASH|ARANGE|
+        NEG|PLUS)    
+    ;              
+unaryFold
+    : (MUL|DIV|POW|MOD|
+        PLUS|MINUS) FOLD
 ;
 
 binaryOperators:
@@ -33,17 +35,12 @@ binaryOperators:
 
 expr
     : '(' expr ')'                                  # parent
-    | op=(IDENTITY|HASH|ARANGE|
-        NEG|PLUS) expr                              # unary
 
-    | <assoc=right> expr 
-        binaryOperators expr                        # aritmetic
+    | <assoc=right> expr binaryOperators expr       # binaryAritmetic
 
-    | op=(POWD|MULD|PLUSD|MINUSD) expr              # aritmeticDouble
+    | unaryOperators expr                           # unaryAritmetic
 
-    | op=(CONCATE|
-        MUL|DIV|POW|MOD|
-        PLUS|MINUS) FOLD expr                       # fold
+    | unaryFold expr                                # foldAritmetic
 
     | INTVAL+                                       # value
     | ID                                            # variable

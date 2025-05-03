@@ -102,18 +102,6 @@ class EvalVisitor(gVisitor):
         return var
 
     @debug_visit
-    def visitUnary(self, ctx):
-        value = self.visit(ctx.expr())
-        if ctx.NEG():
-            value = -value
-        elif ctx.HASH():
-            value = np.int32(np.atleast_1d(value).size)
-        elif ctx.ARANGE():
-            value = np.int32(np.arange(value))
-
-        return value
-
-    @debug_visit
     def visitValue(self, ctx):
         if ctx.INTVAL() and len(ctx.INTVAL()) == 1:
             return np.int32(ctx.INTVAL(0).getText())
@@ -122,7 +110,7 @@ class EvalVisitor(gVisitor):
 
 
     @debug_visit
-    def visitAritmetic(self, ctx):
+    def visitBinaryAritmetic(self, ctx):
         lhs = self.visit(ctx.expr(0)) if ctx.expr(0) else None
         rhs = self.visit(ctx.expr(1)) if ctx.expr(1) else None
 
@@ -166,40 +154,50 @@ class EvalVisitor(gVisitor):
             return f"error: {str(e)}"
     
     @debug_visit
-    def visitAritmeticDouble(self, ctx):
+    def visitUnaryAritmetic(self, ctx):
         lhs = self.visit(ctx.expr())
         rhs = lhs
 
         try:
-            if ctx.POWD():
+            if ctx.unaryOperators().POWD():
                 return np.power(lhs, rhs)
-            elif ctx.MULD():
+            elif ctx.unaryOperators().MULD():
                 return np.multiply(lhs, rhs)
-            elif ctx.PLUSD():
+            elif ctx.unaryOperators().PLUSD():
                 return np.add(lhs, rhs)
-            elif ctx.MINUSD():
+            elif ctx.unaryOperators().MINUSD():
                 return np.subtract(lhs, rhs)
-      
+            elif ctx.unaryOperators().NEG():
+                return -lhs
+            elif ctx.unaryOperators().HASH():
+                return np.int32(np.atleast_1d(lhs).size)
+            elif ctx.unaryOperators().ARANGE():
+                return np.int32(np.arange(lhs))
+            elif ctx.unaryOperators().PLUS():
+                return lhs
+            elif ctx.unaryOperators().IDENTITY():
+                return lhs
+        
         except Exception as e:
             return f"error: {str(e)}"
     
     @debug_visit
-    def visitFold(self, ctx):
+    def visitFoldAritmetic(self, ctx):
         value = self.visit(ctx.expr())
         try:
-            if ctx.MUL():
+            if ctx.unaryFold().MUL():
                 return np.multiply.reduce(value).astype(np.int32)
-            elif ctx.DIV():
+            elif ctx.unaryFold().DIV():
                 return np.floor_divide.reduce(value).astype(np.int32)    # integer division
-            elif ctx.PLUS():
+            elif ctx.unaryFold().PLUS():
                 return np.add.reduce(value).astype(np.int32)
-            elif ctx.MINUS():
+            elif ctx.unaryFold().MINUS():
                 return np.subtract.reduce(value).astype(np.int32)
-            elif ctx.POW():
+            elif ctx.unaryFold().POW():
                 return np.power.reduce(value).astype(np.int32)
-            elif ctx.MOD():
+            elif ctx.unaryFold().MOD():
                 return np.mod.reduce(value).astype(np.int32)             # reverse operators
-            elif ctx.CONCATE():
+            elif ctx.unaryFold().CONCATE():
                 return np.array(value)
 
         except Exception as e:
