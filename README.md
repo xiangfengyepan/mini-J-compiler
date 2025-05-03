@@ -11,3 +11,4 @@
 - treballant amb presicio de int32
 - no float?
 - <> no funciona
+- operadoes amb flip double fold

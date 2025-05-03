@@ -1,7 +1,12 @@
-k =: 2 + 3 * 4 = 14         NB. results: 1         ((2 + 12) = 14 → 1)
-l =: 2 + 3 = 5             NB. results: 1         ((2 + 3) = 5 → 1)
-m =: 3 * 3 = 9             NB. results: 1         ((3 * 3) = 9 → 1)
+a =: 5 - 2           NB. results: 3
+b =: 2 * 3           NB. results: 6
+c =: 6 % 2           NB. results: 3     
+d =: 2 | 7           NB. results: 1 
+e =: 2 ^ 3           NB. results: 8
 
-k
-l
-m
+NB. print results
+a
+b
+c 
+d
+e

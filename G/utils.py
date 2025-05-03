@@ -2,6 +2,7 @@
 import sys
 import numpy as np
 from antlr4.error.ErrorListener import ErrorListener
+
 class DebugConfig:
     visits_enabled = False
     visit_depth = 0

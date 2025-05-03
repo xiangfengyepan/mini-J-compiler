@@ -1,37 +1,95 @@
 import numpy as np
+import inspect
 
+from gParser import gParser
 from gVisitor import gVisitor
 from utils import debug_visit
+
+
+class OperatorRegistry:
+    def __init__(self):
+        super().__init__()
+        self.binaryOperators = {
+            # '*': lambda lhs, rhs: np.multiply(lhs, rhs),
+            # '%': lambda lhs, rhs: np.floor_divide(lhs, rhs),
+            # '+': lambda lhs, rhs: np.add(lhs, rhs),
+            # '-': lambda lhs, rhs: np.subtract(lhs, rhs),
+            # '^': lambda lhs, rhs: np.power(lhs, rhs),
+            # '|': lambda lhs, rhs: np.mod(rhs, lhs),
+
+            # ',': lambda lhs, rhs: np.concatenate((np.atleast_1d(lhs), np.atleast_1d(rhs))),
+            # '#': lambda lhs, rhs: np.array(rhs)[np.array(lhs, dtype=bool)],
+            # '{': lambda lhs, rhs: np.array(rhs)[np.array(lhs)],
+
+            # '=': lambda lhs, rhs: np.equal(lhs, rhs).astype(np.int32),
+            # '<>': lambda lhs, rhs: np.not_equal(lhs, rhs).astype(np.int32),
+            # '<': lambda lhs, rhs: np.less(lhs, rhs).astype(np.int32),
+            # '>': lambda lhs, rhs: np.greater(lhs, rhs).astype(np.int32),
+            # '<=': lambda lhs, rhs: np.less_equal(lhs, rhs).astype(np.int32),
+            # '>=': lambda lhs, rhs: np.greater_equal(lhs, rhs).astype(np.int32),
+        }
+
+        self.unaryOperators = {
+            # ']': lambda x: x,
+            # '#': lambda x: np.int32(np.atleast_1d(x).size),
+            # 'i.': lambda x: np.arange(x).astype(np.int32),
+            # '_': lambda x: -x,
+            # '+': lambda x: x,
+
+            # '^:': lambda x: np.power(x, x),
+            # '*:': lambda x: np.multiply(x, x),
+            # '+:': lambda x: np.add(x, x),
+            # '-:': lambda x: np.subtract(x, x),
+        }
+
+    def addOperator(self, name, func, arity=2):
+        if arity == 1:
+            self.unaryOperators[name] = func
+        elif arity == 2:
+            self.binaryOperators[name] = func
+        else:
+            raise ValueError("Only unary and binary operators are supported")
+
+    # def callOperator(self, operator_name, lhs, rhs):
+    #     if operator_name in self.operators:
+    #         return self.operators[operator_name](lhs, rhs)
+    #     else:
+    #         raise ValueError(f"Operador {operator_name} no encontrado.")
+
+    def getOperator(self, name, arity=2):
+        if arity == 1:
+            return self.unaryOperators.get(name)
+        elif arity == 2:
+            return self.binaryOperators.get(name)
+        else:
+            raise ValueError("Unsupported operator arity")
+
 
 class EvalVisitor(gVisitor):
     def __init__(self):
         super().__init__()
+        self.functions = OperatorRegistry()
         self.variables = {}
 
     @debug_visit
     def visitProgram(self, ctx):
-        results = self.visit(ctx.statements())
-        return results
-            
+        return self.visit(ctx.statements())
+
     @debug_visit
     def visitStatements(self, ctx):
-        results = []
-        for child in ctx.statement():
-            value = self.visit(child)
-            results.append(value)
-            
-        return results
-    
+        return [self.visit(child) for child in ctx.statement()]
+
     @debug_visit
     def visitExprStmt(self, ctx):
-        return self.visit(ctx.expr())
+        value = self.visit(ctx.expr())
+        return value
 
     @debug_visit
     def visitDeclaration(self, ctx):
         name = ctx.ID().getText()
         value = self.visit(ctx.expr())
         self.variables[name] = value
-        
+
 
     @debug_visit
     def visitParent(self, ctx):

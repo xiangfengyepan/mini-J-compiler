@@ -15,10 +15,20 @@ endOfStmt
     | EOF
     ;
 
-declaration: ID ASSIGN (expr|operators);
+declaration: ID ASSIGN expr;
 
-operators:
-    // TODO
+unaryOperators
+    : //(POWD|MULD|PLUSD|MINUSD|
+    (IDENTITY|HASH|ARANGE|
+        NEG|PLUS)                   # unaryOp
+    | (MUL|DIV|POW|MOD|
+            PLUS|MINUS) FOLD        # foldOp
+;
+
+binaryOperators:
+    (CONCATE|HASH|INDEX|
+            PLUS|MINUS|MUL|DIV|POW|MOD
+            |EQUAL|NE|LT|GT|LE|GE) FLIP?    # binaryOp
 ;
 
 expr
@@ -31,18 +41,19 @@ expr
         PLUS|MINUS|MUL|DIV|POW|MOD
         |EQUAL|NE|LT|GT|LE|GE) FLIP? expr           # aritmetic
 
-    | op=(CONCATE|HASH|INDEX|
-        MUL|DIV|POW|MOD|
-            PLUS|MINUS) DOUBLE expr                 # aritmetic
+    | op=(POW|MOD|PLUS|MINUS) DOUBLE expr           # aritmetic
 
-    | op=(CONCATE|HASH|INDEX|
+    | op=(CONCATE|
         MUL|DIV|POW|MOD|
         PLUS|MINUS) FOLD expr                       # fold
 
     | INTVAL+                                       # value
     | ID                                            # variable
+    // | op=( IDENTITY|HASH|ARANGE|
+    //         NEG|PLUS|ID) expr?                      # unaryFuncCall                                     
+    // | expr op=( IDENTITY|HASH|ARANGE|
+    //         NEG|PLUS|ID) expr                       # binaryFuncCall     
     ;
-
 
 
 ASSIGN      : '=:';
@@ -70,6 +81,10 @@ ARANGE      : 'i.' ;
 FOLD        : '/' ; 
 FLIP        : '~' ;
 
+// PLUSD        : '+:' ;
+// MINUSD       : '-:' ;
+// MULD         : '*:' ;
+// POWD         : '^:' ;
 DOUBLE      : ':' ;
 
 INTVAL    : ('0'..'9')+ ;
