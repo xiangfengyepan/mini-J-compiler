@@ -37,11 +37,9 @@ expr
         NEG|PLUS) expr                              # unary
 
     | <assoc=right> expr 
-        op=(CONCATE|HASH|INDEX|
-        PLUS|MINUS|MUL|DIV|POW|MOD
-        |EQUAL|NE|LT|GT|LE|GE) FLIP? expr           # aritmetic
+        binaryOperators expr                        # aritmetic
 
-    | op=(POW|MOD|PLUS|MINUS) DOUBLE expr           # aritmetic
+    | op=(POWD|MULD|PLUSD|MINUSD) expr              # aritmeticDouble
 
     | op=(CONCATE|
         MUL|DIV|POW|MOD|
@@ -81,11 +79,11 @@ ARANGE      : 'i.' ;
 FOLD        : '/' ; 
 FLIP        : '~' ;
 
-// PLUSD        : '+:' ;
-// MINUSD       : '-:' ;
-// MULD         : '*:' ;
-// POWD         : '^:' ;
-DOUBLE      : ':' ;
+PLUSD        : '+:' ;
+MINUSD       : '-:' ;
+MULD         : '*:' ;
+POWD         : '^:' ;
+// DOUBLE      : ':' ;
 
 INTVAL    : ('0'..'9')+ ;
 ID        : ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;

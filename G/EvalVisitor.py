@@ -128,40 +128,58 @@ class EvalVisitor(gVisitor):
 
         rhs = lhs if rhs is None else rhs
 
-        if ctx.FLIP():
+        if ctx.binaryOperators() and ctx.binaryOperators().FLIP():
             lhs, rhs = rhs, lhs
 
         try:
-            if ctx.MUL():
+            if ctx.binaryOperators().MUL():
                 return np.multiply(lhs, rhs)
-            elif ctx.DIV():
+            elif ctx.binaryOperators().DIV():
                 return np.floor_divide(lhs, rhs)    # integer divition
-            elif ctx.PLUS():
+            elif ctx.binaryOperators().PLUS():
                 return np.add(lhs, rhs)
-            elif ctx.MINUS():
+            elif ctx.binaryOperators().MINUS():
                 return np.subtract(lhs, rhs)
-            elif ctx.POW():
+            elif ctx.binaryOperators().POW():
                 return np.power(lhs, rhs)
-            elif ctx.MOD():
+            elif ctx.binaryOperators().MOD():
                 return np.mod(rhs, lhs)             # reverse operator 
-            elif ctx.CONCATE():
+            elif ctx.binaryOperators().CONCATE():
                 return np.concatenate((np.atleast_1d(lhs), np.atleast_1d(rhs)))
-            elif ctx.HASH():
+            elif ctx.binaryOperators().HASH():
                 return np.array(rhs)[np.array(lhs, dtype=bool)]
-            elif ctx.INDEX():
+            elif ctx.binaryOperators().INDEX():
                 return np.array(rhs)[np.array(lhs)]
-            elif ctx.EQUAL():
+            elif ctx.binaryOperators().EQUAL():
                 return np.equal(lhs, rhs).astype(np.int32)
-            elif ctx.NE():
+            elif ctx.binaryOperators().NE():
                 return np.not_equal(lhs, rhs).astype(np.int32)
-            elif ctx.LT():
+            elif ctx.binaryOperators().LT():
                 return np.less(lhs, rhs).astype(np.int32)
-            elif ctx.GT():
+            elif ctx.binaryOperators().GT():
                 return np.greater(lhs, rhs).astype(np.int32)
-            elif ctx.LE():
+            elif ctx.binaryOperators().LE():
                 return np.less_equal(lhs, rhs).astype(np.int32)
-            elif ctx.GE():
+            elif ctx.binaryOperators().GE():
                 return np.greater_equal(lhs, rhs).astype(np.int32)
+        except Exception as e:
+            return f"error: {str(e)}"
+    
+    @debug_visit
+    def visitAritmeticDouble(self, ctx):
+        lhs = self.visit(ctx.expr())
+        rhs = lhs
+
+        try:
+            if ctx.POWD():
+                return np.power(lhs, rhs)
+            elif ctx.MULD():
+                return np.multiply(lhs, rhs)
+            elif ctx.PLUSD():
+                return np.add(lhs, rhs)
+            elif ctx.MINUSD():
+                return np.subtract(lhs, rhs)
+      
         except Exception as e:
             return f"error: {str(e)}"
     
