@@ -8,7 +8,10 @@
 
 
 
-- treballant amb presicio de int32
-- no float?
 - <> no funciona
 - operadoes amb flip double fold
+- functions amb maxim un parametre?
+- 2 | ]? -> 2 | 
+- _ + as a unray operator?
+- recursivitat?
+- input?

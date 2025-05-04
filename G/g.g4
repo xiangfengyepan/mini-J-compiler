@@ -49,7 +49,7 @@ expr
 
     | unaryOperators expr                           # unaryAritmetic
 
-    | foldOperators expr                                # foldAritmetic
+    | foldOperators expr                            # foldAritmetic
 
     | INTVAL+                                       # value
     | ID                                            # variable

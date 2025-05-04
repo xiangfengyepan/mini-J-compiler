@@ -1,4 +1,5 @@
 import numpy as np
+
 import inspect
 
 from gParser import gParser
@@ -9,6 +10,8 @@ from utils import debug_visit
 class OperatorRegistry:
     def __init__(self):
         super().__init__()
+        
+        self.tokens =  gParser.literalNames # TODO
 
         self.operator_map = {
             '*': np.multiply,
@@ -39,6 +42,8 @@ class OperatorRegistry:
             '>=': lambda lhs, rhs: np.greater_equal(lhs, rhs).astype(np.int32),
 
             '~': lambda lhs, rhs: (rhs, lhs),
+
+            '/': lambda op, x: op.reduce(np.array(x, dtype=np.int32)),
         }
 
         self.unaryOperators = {
@@ -52,8 +57,6 @@ class OperatorRegistry:
             '*:': lambda x: np.multiply(x, x),
             '+:': lambda x: np.add(x, x),
             '-:': lambda x: np.subtract(x, x),
-
-            '/': lambda op, x: op.reduce(np.array(x, dtype=np.int32)),
         }
 
         self.stack = {
@@ -138,10 +141,17 @@ class EvalVisitor(gVisitor):
             if child.expr():
                 self.functions.pushStack(name, self.visit(child.expr()))
             else:
-                self.visit(child)
+                func = self.visit(child)
+  
+                arity = func.__code__.co_argcount - len(func.__defaults__ or [])
+                print(f"Arity: {arity}")
+
+                source = inspect.getsource(func)
+                print(source)
+
+                self.functions.addOperator(name, func, arity)
 
         print(name, [child.getText() for child in ctx.operators()])
-        # self.functions.addOperator(name, func, arity=2)
         
     @debug_visit
     def visitBinaryOperators(self, ctx):
@@ -165,7 +175,7 @@ class EvalVisitor(gVisitor):
         try:
             op_symbol = ctx.getChild(0).getText()
             op = self.functions.getOperatorMap(op_symbol)
-            myFold = self.functions.getOperator(ctx.FOLD().getText(), 1)
+            myFold = self.functions.getOperator(ctx.FOLD().getText(), 2)
     
             return lambda x: myFold(op, x).astype(self.INT_TYPE)
         
@@ -185,8 +195,11 @@ class EvalVisitor(gVisitor):
     @debug_visit
     def visitUnaryFuncCall(self, ctx):
         name = ctx.ID().getText()
-        print(name, ctx.expr().getText())
-        return
+        func = self.functions.getOperator(name, 1)        
+        args = self.visit(ctx.expr())
+
+        print(name, inspect.getsource(func), args)
+        return func(args)
 
     @debug_visit
     def visitValue(self, ctx):
