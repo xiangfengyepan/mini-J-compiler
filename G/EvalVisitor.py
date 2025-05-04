@@ -1,11 +1,9 @@
 import numpy as np
 
-import inspect
-
+from antlr4  import TerminalNode 
 from gParser import gParser
 from gVisitor import gVisitor
 from utils import debug_visit
-
 
 class OperatorRegistry:
     def __init__(self):
@@ -13,7 +11,7 @@ class OperatorRegistry:
         
         self.tokens =  gParser.literalNames # TODO
 
-        self.operator_map = {
+        self.foldOperator = {
             '*': np.multiply,
             '%': np.floor_divide,
             '+': np.add,
@@ -59,48 +57,72 @@ class OperatorRegistry:
             '-:': lambda x: np.subtract(x, x),
         }
 
-        self.stack = {
-            # TODO list of parameter for a function
-            # exmpale: 
-            # 'foo' : [1, 2, 3]
-        }
+        self.stack = {}
     
-    def getOperatorMap(self, op_symbol):
-        return self.operator_map.get(op_symbol)
+    def compose(self, funcs):
+        def composed(*args):
+            for f in funcs:
+                arity = f.__code__.co_argcount - len(f.__defaults__ or [])  
+                if arity == len(args):  
+                    args = (f(*args),) 
+                elif arity < len(args):
+                    args = f(*args)
+                else:
+                    raise ValueError(f"Function with arity {arity} cannot handle {len(args)} arguments")
+            return args[0]
+        return composed
+        
+    def getFoldOperator(self, op_symbol):
+        return self.foldOperator.get(op_symbol)
 
-    def addOperator(self, name, func, arity):
+    def addOperator(self, name, funcs, arity):
+        composedFunc = self.compose(funcs)
         if arity == 1:
-            self.unaryOperators[name] = func
+            self.unaryOperators[name] = composedFunc
         elif arity == 2:
-            self.binaryOperators[name] = func
+            self.binaryOperators[name] = composedFunc
         else:
             raise ValueError("Only unary and binary operators are supported")
+        print("addOpetaor", name, composedFunc, arity)
         
-    def getOperator(self, name, arity):
+    def getOperator(self, name, arity=None):
         if arity == 1:
             return self.unaryOperators.get(name)
         elif arity == 2:
             return self.binaryOperators.get(name)
-        else:
-            raise ValueError("Unsupported operator arity")
+        
+        operator = self.unaryOperators.get(name) or self.binaryOperators.get(name)
+        
+        if operator is None:
+            raise ValueError(f"Operator {name} not found")
+        
+        return operator
     
     def pushStack(self, name, parameter):
         if name not in self.stack:
             self.stack[name] = []
         self.stack[name].append(parameter)
 
-    def popStack(self, name):
-        return self.stack[name].pop()
+    def getAllStack(self, name):
+        return self.stack[name]
 
-    def stackEmpty(self, name):
+    def isStackEmpty(self, name):
         return name not in self.stack or len(self.stack[name]) == 0
+    
+    def stackSize(self, name):
+        if self.isStackEmpty(name):
+            return 0
+        return len(self.stack[name]) 
 
-    def callOperator(self, operator_name, parameters):
-        arity = len(parameters)
-        operator = self.getOperator(operator_name, arity)
-        if not operator:
-            raise ValueError(f"Operator '{operator_name}' with arity {arity} not found")
-        return operator(*parameters)
+    def callOperator(self, name, parameters):
+        func = self.getOperator(name, 1)   
+        args = []
+        if not self.isStackEmpty(name):
+            args.extend(self.getAllStack(name))
+        args.extend(parameters)
+        print(func, args)
+
+        return func(*args)
 
 class EvalVisitor(gVisitor):
     INT_TYPE = np.int32
@@ -133,25 +155,32 @@ class EvalVisitor(gVisitor):
     @debug_visit
     def visitOperatorDeclaration(self, ctx):
         name = ctx.ID().getText()
-        # func = self.visit(ctx.operators()) 
+        # func = self.visit(ctx.composeOperators()) 
         # TODO addOperator in Operator Registry 
         # 1. creat and lambda combinationg funcion for all the ctx.opertors that are not expr() [ unaryOperators binaryOperators unaryFold] 
-        # 2. push parameter in the stack (if ctx.operators.expr())
-        for child in ctx.operators():
+        # 2. push parameter in the stack (if ctx.composeOperators.expr())
+        funcs = []
+        operators = ctx.composeOperators().getChildren()
+        for child in operators:
+            if isinstance(child, TerminalNode):
+                continue
+            
             if child.expr():
-                self.functions.pushStack(name, self.visit(child.expr()))
+                if isinstance(child.expr(), gParser.VariableContext):
+                    funcs.append(func)
+
+                    self.functions.pushStack(name, self.functions.getAllStack(child.expr().ID().getText()))
+                else:
+                    self.functions.pushStack(name, self.visit(child.expr()))
             else:
                 func = self.visit(child)
-  
-                arity = func.__code__.co_argcount - len(func.__defaults__ or [])
-                print(f"Arity: {arity}")
+                funcs.append(func)
 
-                source = inspect.getsource(func)
-                print(source)
-
-                self.functions.addOperator(name, func, arity)
-
-        print(name, [child.getText() for child in ctx.operators()])
+        # funcArity = max(f.__code__.co_argcount for f in funcs)    
+        # print(funcArity)
+        # operatorArity = funcArity - self.functions.stackSize(name)
+      
+        self.functions.addOperator(name, funcs, 1)
         
     @debug_visit
     def visitBinaryOperators(self, ctx):
@@ -174,7 +203,7 @@ class EvalVisitor(gVisitor):
     def visitFoldOperators(self, ctx):
         try:
             op_symbol = ctx.getChild(0).getText()
-            op = self.functions.getOperatorMap(op_symbol)
+            op = self.functions.getFoldOperator(op_symbol)
             myFold = self.functions.getOperator(ctx.FOLD().getText(), 2)
     
             return lambda x: myFold(op, x).astype(self.INT_TYPE)
@@ -189,17 +218,18 @@ class EvalVisitor(gVisitor):
     @debug_visit
     def visitVariable(self, ctx):
         name = ctx.ID().getText()
-        var = self.variables[name]
+        
+        var = self.functions.getOperator(name)
+        if var is None:
+            var = self.variables[name]
+        
         return var
     
     @debug_visit
     def visitUnaryFuncCall(self, ctx):
         name = ctx.ID().getText()
-        func = self.functions.getOperator(name, 1)        
-        args = self.visit(ctx.expr())
-
-        print(name, inspect.getsource(func), args)
-        return func(args)
+        parameters = [self.visit(ctx.expr())]
+        return self.functions.callOperator(name, parameters)
 
     @debug_visit
     def visitValue(self, ctx):

@@ -16,13 +16,17 @@ endOfStmt
 
 declaration
     : ID ASSIGN expr                                # exprDeclaration
-    | ID ASSIGN operators+                          # operatorDeclaration
+    | ID ASSIGN composeOperators                    # operatorDeclaration
     ;
 
-operators
+composeOperators
+    : simpleOperators+ (COMPOSE simpleOperators+)*
+    ;
+
+simpleOperators
     : unaryOperators
     | binaryOperators
-    | foldOperators
+    | foldOperators                   
     | expr
     ;
 
@@ -84,11 +88,12 @@ ARANGE      : 'i.' ;
 FOLD        : '/' ; 
 FLIP        : '~' ;
 
-PLUSD        : '+:' ;
-MINUSD       : '-:' ;
-MULD         : '*:' ;
-POWD         : '^:' ;
-// DOUBLE      : ':' ;
+PLUSD       : '+:' ;
+MINUSD      : '-:' ;
+MULD        : '*:' ;
+POWD        : '^:' ;
+
+COMPOSE     : '@:' ;
 
 INTVAL    : ('0'..'9')+ ;
 ID        : ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
