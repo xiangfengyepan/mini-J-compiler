@@ -6,13 +6,12 @@ from gParser import gParser
 from gVisitor import gVisitor
 from utils import debug_visit
 
-
 class EvalVisitor(gVisitor):
     INT_TYPE = np.int32
 
     def __init__(self):
         super().__init__()
-        self.functions = OperatorRegistry()
+        self.operatorRegistry = OperatorRegistry()
         self.variables = {}
         
 
@@ -38,38 +37,42 @@ class EvalVisitor(gVisitor):
     @debug_visit
     def visitOperatorDeclaration(self, ctx):
         name = ctx.ID().getText()
-        # func = self.visit(ctx.composeOperators()) 
-        # TODO addOperator in Operator Registry 
-        # 1. creat and lambda combinationg funcion for all the ctx.opertors that are not expr() [ unaryOperators binaryOperators unaryFold] 
-        # 2. push parameter in the stack (if ctx.composeOperators.expr())
-        funcs = []
-        operators = ctx.composeOperators().getChildren()
-        for child in operators:
+        functionList = []
+
+        def normalize_to_list(item):
+            return item if isinstance(item, list) else [item]
+
+        for child in ctx.composeOperators().getChildren():
             if isinstance(child, TerminalNode):
+                # TODO only add unary operators
+                self.operatorRegistry.addOperator(name, functionList, 1)
+                functionList = []
                 continue
-            
-            if child.expr():
-                if isinstance(child.expr(), gParser.VariableContext):
-                    funcs.append(func)
 
-                    self.functions.pushStack(name, self.functions.getAllStack(child.expr().ID().getText()))
+            expr = child.expr()
+            if expr:
+                if isinstance(expr, gParser.VariableContext):
+                    var_name = expr.ID().getText()
+                    function = self.operatorRegistry.getOperator(var_name)
+                    if function is not None:
+                        self.operatorRegistry.pushStack(name, self.operatorRegistry.getAllStack(var_name))
+                        functionList.extend(normalize_to_list(function))
+                    else:
+                        self.operatorRegistry.pushStack(name, self.visit(expr))
                 else:
-                    self.functions.pushStack(name, self.visit(child.expr()))
+                    self.operatorRegistry.pushStack(name, self.visit(expr))
             else:
-                func = self.visit(child)
-                funcs.append(func)
-
-        # funcArity = max(f.__code__.co_argcount for f in funcs)    
-        # print(funcArity)
-        # operatorArity = funcArity - self.functions.stackSize(name)
-      
-        self.functions.addOperator(name, funcs, 1)
+                function = self.visit(child)
+                functionList.extend(normalize_to_list(function))
+        
+        # TODO only add unary operators
+        self.operatorRegistry.addOperator(name, functionList, 1)
         
     @debug_visit
     def visitBinaryOperators(self, ctx):
         try:
             name = ctx.getChild(0).getText()
-            return self.functions.getOperator(name, 2)
+            return self.operatorRegistry.getOperator(name, 2)
         except Exception as e:
             return f"error: {str(e)}"
 
@@ -77,7 +80,7 @@ class EvalVisitor(gVisitor):
     def visitUnaryOperators(self, ctx):
         try:
             name = ctx.getChild(0).getText()
-            return self.functions.getOperator(name, 1)
+            return self.operatorRegistry.getOperator(name, 1)
         except Exception as e:
             return f"error: {str(e)}"
 
@@ -86,8 +89,8 @@ class EvalVisitor(gVisitor):
     def visitFoldOperators(self, ctx):
         try:
             op_symbol = ctx.getChild(0).getText()
-            op = self.functions.getFoldOperator(op_symbol)
-            myFold = self.functions.getOperator(ctx.FOLD().getText(), 2)
+            op = self.operatorRegistry.getFoldOperator(op_symbol)
+            myFold = self.operatorRegistry.getOperator(ctx.FOLD().getText(), 2)
     
             return lambda x: myFold(op, x).astype(self.INT_TYPE)
         
@@ -102,7 +105,7 @@ class EvalVisitor(gVisitor):
     def visitVariable(self, ctx):
         name = ctx.ID().getText()
         
-        var = self.functions.getOperator(name)
+        var = self.operatorRegistry.getOperator(name)
         if var is None:
             var = self.variables[name]
         
@@ -111,8 +114,12 @@ class EvalVisitor(gVisitor):
     @debug_visit
     def visitUnaryFuncCall(self, ctx):
         name = ctx.ID().getText()
-        parameters = [self.visit(ctx.expr())]
-        return self.functions.callOperator(name, parameters)
+        parameter = self.visit(ctx.expr())
+        self.operatorRegistry.pushStack(name, parameter)
+        result = self.operatorRegistry.callOperator(name)
+        self.operatorRegistry.popStack(name)
+        return result
+
 
     @debug_visit
     def visitValue(self, ctx):
