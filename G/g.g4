@@ -96,12 +96,6 @@ COMPOSE     : '@:' ;
 INTVAL    : ('0'..'9')+ ;
 ID        : ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
 
-// Strings (in quotes) with escape sequences
-STRING    : '"' ( ESC_SEQ | ~('\\'|'"') )* '"' ;
-
-fragment
-ESC_SEQ   : '\\' ('b'|'t'|'n'|'f'|'r'|'"'|'\''|'\\') ;
-
 NEWLINE : '\r'? '\n' ;
 
 COMMENT: 'NB.' ~[\r\n]* -> skip ;

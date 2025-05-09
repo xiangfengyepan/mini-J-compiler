@@ -2,6 +2,8 @@ import numpy as np
 
 from gParser import gParser
 
+
+# TODO delete comments
 class OperatorRegistry:
     def __init__(self):
         super().__init__()
@@ -56,33 +58,33 @@ class OperatorRegistry:
     
     def compose(self, funcs):
         def composed(*args):
-            print("INICIO composición con argumentos iniciales:", args)
+            # print("INICIO composición con argumentos iniciales:", args)
             
             for idx, f in enumerate(funcs):
                 arity = f.__code__.co_argcount - len(f.__defaults__ or [])
-                print(f"\n--- Función {idx+1}: {f.__name__} ---", "Aridad esperada:", arity)
+                # print(f"\n--- Función {idx+1}: {f.__name__} ---", "Aridad esperada:", arity)
 
                 if arity == len(args):
                     reversed_args = tuple(reversed(args))
-                    print("Usando argumentos (revertidos):", reversed_args)
+                    # print("Usando argumentos (revertidos):", reversed_args)
                     result = f(*reversed_args)
-                    print(f"Resultado de {f.__name__}({reversed_args}):", result)
+                    # print(f"Resultado de {f.__name__}({reversed_args}):", result)
                     args = (result,)
                 elif arity < len(args):
                     used_args = args[:arity]
                     remaining_args = args[arity:]
                     reversed_args = tuple(reversed(used_args))
-                    print("Usando argumentos (revertidos):", reversed_args)
+                    # print("Usando argumentos (revertidos):", reversed_args)
                     result = f(*reversed_args)
-                    print(f"Resultado de {f.__name__}({reversed_args}):", result)
+                    # print(f"Resultado de {f.__name__}({reversed_args}):", result)
                     args = (result,) + remaining_args
 
                 else:
                     raise ValueError(f"Function '{f.__name__}' with arity {arity} cannot handle {len(args)} arguments")
 
-                print("Argumentos para siguiente función:", args)
+                # print("Argumentos para siguiente función:", args)
 
-            print("\nFIN composición. Resultado final:", args)
+            # print("\nFIN composición. Resultado final:", args)
             return args
         return composed
 
@@ -91,7 +93,11 @@ class OperatorRegistry:
         return self.foldOperator.get(op_symbol)
 
     def addOperator(self, name, funcs, arity):
-        composedFunc = self.compose(funcs)
+        if len(funcs) == 1 and funcs[0].__name__ == "composed":
+            composedFunc = funcs[0]
+        else:
+            composedFunc = self.compose(funcs)
+
 
         if arity == 1:
             if name not in self.unaryOperators:
@@ -103,7 +109,19 @@ class OperatorRegistry:
             self.binaryOperators[name].append(composedFunc)
         else:
             raise ValueError("Only unary and binary operators are supported")
-        print("addOpetaor", name, composedFunc, arity)
+        # print("addOperator", name, composedFunc, arity)
+    
+
+    def delOperator(self, name, arity):
+
+        if arity == 1:
+            if name in self.unaryOperators:
+                self.unaryOperators[name] = []
+        elif arity == 2:
+            if name in self.binaryOperators:
+                self.binaryOperators[name] = []
+        else:
+            raise ValueError("Only unary and binary operators are supported")
         
     def getOperator(self, name, arity=None):
         if arity == 1:
@@ -118,13 +136,13 @@ class OperatorRegistry:
     def pushStack(self, name, parameter):
         if name not in self.stack:
             self.stack[name] = []
-        print(f"PUSH → {parameter} en pila '{name}'")
+        # print(f"PUSH → {parameter} en pila '{name}'")
         self.stack[name].append(parameter)
 
     def popStack(self, name):
         if name in self.stack and self.stack[name]:
             value = self.stack[name].pop()
-            print(f"POP ← {value} desde pila '{name}'")
+            # print(f"POP ← {value} desde pila '{name}'")
             return value
         raise IndexError(f"Pila '{name}' vacía o no existe")
 
@@ -137,11 +155,9 @@ class OperatorRegistry:
     def isStackEmpty(self, name):
         return name not in self.stack or len(self.stack[name]) == 0
     
-    def stackSize(self, name):
-        if self.isStackEmpty(name):
-            return 0
-        return len(self.stack[name]) 
-    
+    def popAllStack(self, name):
+        while not self.isStackEmpty(name):
+            self.popStack(name)
 
 
     def callOperator(self, name):

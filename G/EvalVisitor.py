@@ -1,4 +1,6 @@
 import numpy as np
+import inspect
+
 
 from antlr4  import TerminalNode 
 from OperatorRegistry import OperatorRegistry
@@ -36,7 +38,12 @@ class EvalVisitor(gVisitor):
 
     @debug_visit
     def visitOperatorDeclaration(self, ctx):
+
         name = ctx.ID().getText()
+        if self.operatorRegistry.getOperator(name, 1) is not None:
+            self.operatorRegistry.popAllStack(name)
+            self.operatorRegistry.delOperator(name, 1)
+
         functionList = []
 
         def normalize_to_list(item):

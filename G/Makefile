@@ -33,6 +33,7 @@ run: antlr
 test: antlr
 	../myTest
 
+# TODO
 help:
 	@echo "Makefile to manage ANTLR execution and compiler testing."
 	@echo ""
