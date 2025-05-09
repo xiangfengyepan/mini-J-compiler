@@ -1,6 +1,4 @@
 import numpy as np
-import inspect
-
 
 from antlr4  import TerminalNode 
 from OperatorRegistry import OperatorRegistry
