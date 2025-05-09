@@ -102,7 +102,11 @@ make run ARGS='' === make runfile FILE="programa.j" ARGS=''
 make runfile FILE='arxiu.j' ARGS=''
 ```
 
-Aquesta comanda executarà el programa definit en el fitxer `.j` especificat. Pots afegir arguments opcionals com `--ia`, `--test`, `--debug`, o `--tree`.
+Aquesta comanda executarà el programa definit en el fitxer `.j` especificat. Pots afegir arguments opcionals com 
+- `--ia`: interactive execution
+- `--test`: generate .out
+- `--debug`: print enter and exit visit
+- `--tree`: print program tree estructure
 
 **3. Executar el programa amb arguments**
 
@@ -148,3 +152,4 @@ Aquesta comanda executarà el programa en mode depuració i tree, mostrant infor
 - Què hauria d'incloure el README?
 - Funcions llargues, sintaxi de codi, comentaris?
 - dos2unix?
+- format codi?

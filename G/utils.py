@@ -39,7 +39,6 @@ def debug_visit(func):
         return result
 
     return wrapper
-
 class MyErrorListener(ErrorListener):
     def __init__(self):
         super(MyErrorListener, self).__init__()
@@ -48,7 +47,6 @@ class MyErrorListener(ErrorListener):
     def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
         self.hay_error = True
         print(f"Error en la linia {line}, columna {column}: {msg}", file=sys.stderr)
-
 class MyPrinter:
     def format_element(elem, print_errors = False):
         if isinstance(elem, np.int32):
@@ -64,7 +62,6 @@ class MyPrinter:
     
     def my_print(output_list):
         [print(formatted) for elem in output_list if (formatted := MyPrinter.format_element(elem, True)) is not None]
-
 
     def my_write(output_list, file_path):
         with open(file_path, "w") as f:
