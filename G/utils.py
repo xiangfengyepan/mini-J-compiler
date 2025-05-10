@@ -74,4 +74,7 @@ class MyPrinter:
         print("CodeGen Visitor Results")
         print(f"{CYAN}==========================={RESET}")
 
+def normalize_to_list(item):
+    return item if isinstance(item, list) else [item]
+
 

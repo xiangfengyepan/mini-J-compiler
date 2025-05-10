@@ -1,10 +1,9 @@
 import numpy as np
 
-from antlr4  import TerminalNode 
 from OperatorRegistry import OperatorRegistry
 from gParser import gParser
 from gVisitor import gVisitor
-from utils import debug_visit
+from utils import debug_visit, normalize_to_list
 
 class EvalVisitor(gVisitor):
     INT_TYPE = np.int32
@@ -37,39 +36,34 @@ class EvalVisitor(gVisitor):
     def visitOperatorDeclaration(self, ctx):
         name = ctx.ID().getText()
         if self.operatorRegistry.getOperator(name, 1) is not None:
-            self.operatorRegistry.popAllStack(name)
             self.operatorRegistry.delOperator(name, 1)
 
-        functionList = []
-
-        def normalize_to_list(item):
-            return item if isinstance(item, list) else [item]
-
+        composedFunction = []
         for child in ctx.composeOperators().getChildren():
-            if isinstance(child, TerminalNode):
+            if child.getText() == gParser.literalNames[gParser.COMPOSE].strip("'"):
                 # TODO only add unary operators
-                self.operatorRegistry.addOperator(name, functionList, 1)
-                functionList = []
+                self.operatorRegistry.addOperator(name, composedFunction, 1)
+                composedFunction = []
                 continue
 
             expr = child.expr()
+            function = self.visit(child)
             if expr:
+                stack = self.visit(expr)
+                function = None
                 if isinstance(expr, gParser.VariableContext):
                     var_name = expr.ID().getText()
                     function = self.operatorRegistry.getOperator(var_name)
-                    stack = (self.operatorRegistry.getAllStack(var_name) if function is not None else self.visit(expr))
-                    self.operatorRegistry.pushStack(name, stack)
-                    
                     if function is not None:
-                        functionList.extend(normalize_to_list(function))
-                else:
-                    self.operatorRegistry.pushStack(name, self.visit(expr))
-            else:
-                function = self.visit(child)
-                functionList.extend(normalize_to_list(function))
+                        stack = self.operatorRegistry.getAllStack(var_name)
+                
+                self.operatorRegistry.pushStack(name, stack)
+
+            if function is not None:
+                composedFunction.extend(normalize_to_list(function))
         
         # TODO only add unary operators
-        self.operatorRegistry.addOperator(name, functionList, 1)
+        self.operatorRegistry.addOperator(name, composedFunction, 1)
         
     @debug_visit
     def visitBinaryOperators(self, ctx):

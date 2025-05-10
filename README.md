@@ -129,14 +129,18 @@ Aquesta comanda executarà el programa en mode depuració i tree, mostrant infor
 
 - **Composició d'Operadors**: El sistema admet operadors binaris i unitaris. També es poden compondre múltiples operadors dins de funcions. Els paràmetres de les funcions compostes es guarden en una pila (stack), igual que el paràmetre en la crida de la funció. D’aquesta manera, es guarden els valors i les funcions per separat per facilitar la crida a la funció. Les funcions tenen forma de llista per dividir les funcions compostes amb l’operador **'@:'**.
 
-- **Operadors unaris i binaris**: Al fitxer **OperatorRegister.py** es guarden els operadors bàsics, com per exemple **'+'**, com a funcions lambda per ser cridades posteriorment dins de `<operator>Aritmetic`. Això permet reutilitzar-les a l’hora de definir funcions.
+- **Operadors unaris i binaris**: Al fitxer **OperatorRegister.py** es guarden els operadors bàsics de J, com per exemple **'+'** o **']'**, com a funcions lambda per ser cridades posteriorment dins de `<operator>Aritmetic`. Això permet reutilitzar-les a l’hora de definir funcions. En aquest tambe estan els metodoes per cridar funcions i manipular la pila de parametres.
 
 - **Tests**: El projecte inclou un conjunt de proves automatitzades que es poden executar amb `make test` per verificar el bon funcionament de l’intèrpret.
 
 - **Gramàtica**:
   El programa es divideix en *statements*, els quals poden ser una expressió o una declaració.
-  - Per a les expressions: estan separades les operacions aritmètiques en (unària, binària i *fold*).
-  - Per a les declaracions: les variables i les funcions es declaren de manera separada per poedr diferenciar-les de manera mes simple, tot i que podrien anar juntes. Igual que amb les operacions aritmètiques, la declaració de funcions també es divideix en (unària, binària i *fold*) que són `simpleOperators`, i després `composeOperators` amb l’operador **'@:'**.
+  - Per a les expressions: es diferencien les operacions aritmètiques en (unària, binària i *fold*).
+  - Per a les declaracions: les variables i les funcions es declaren per separat per tal de diferenciar-les de manera més senzilla, tot i que podrien anar juntes. Això implica que l'ordre de les regles de declaració en la gramàtica és important, ja que ANTLR analitza les regles sintàctiques (parse rules) segons l'ordre en què estan definides. Una funció podria ser interpretada com una variable, però no a l'inrevés, per tant, la declaració de la variable ha d’anar abans.
+  
+  Igual que amb les operacions aritmètiques, la declaració de funcions també es divideix en (unària, binària i *fold*) que són `simpleOperators`, i després `composeOperators` amb l’oper
+
+  Totes les crides a funció reben exactament un paràmetre, és a dir, els seus arguments són unaris.
 
 
 ---
@@ -153,3 +157,4 @@ Aquesta comanda executarà el programa en mode depuració i tree, mostrant infor
 - Funcions llargues, sintaxi de codi, comentaris?
 - dos2unix?
 - format codi?
+- divisio entre 0 dona 0 en numpy

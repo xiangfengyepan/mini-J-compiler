@@ -97,7 +97,6 @@ class OperatorRegistry:
         else:
             composedFunc = self.compose(funcs)
 
-
         if arity == 1:
             if name not in self.unaryOperators:
                 self.unaryOperators[name] = []
@@ -114,12 +113,13 @@ class OperatorRegistry:
 
         if arity == 1:
             if name in self.unaryOperators:
-                self.unaryOperators[name] = []
+                self.unaryOperators[name].clear()
         elif arity == 2:
             if name in self.binaryOperators:
-                self.binaryOperators[name] = []
+                self.binaryOperators[name].clear()
         else:
             raise ValueError("Only unary and binary operators are supported")
+        self.popAllStack(name)
         
     def getOperator(self, name, arity=None):
         if arity == 1:
@@ -144,6 +144,10 @@ class OperatorRegistry:
             return value
         raise IndexError(f"Pila '{name}' vacía o no existe")
 
+    def popAllStack(self, name):
+        while not self.isStackEmpty(name):
+            self.popStack(name)
+
     def getAllStack(self, name):
         if name not in self.stack:
             return []
@@ -152,10 +156,6 @@ class OperatorRegistry:
 
     def isStackEmpty(self, name):
         return name not in self.stack or len(self.stack[name]) == 0
-    
-    def popAllStack(self, name):
-        while not self.isStackEmpty(name):
-            self.popStack(name)
 
     def callOperator(self, name):
         functionList = self.getOperator(name, 1)   
