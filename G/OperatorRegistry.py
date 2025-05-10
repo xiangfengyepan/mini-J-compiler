@@ -88,7 +88,6 @@ class OperatorRegistry:
             return args
         return composed
 
-        
     def getFoldOperator(self, op_symbol):
         return self.foldOperator.get(op_symbol)
 
@@ -111,7 +110,6 @@ class OperatorRegistry:
             raise ValueError("Only unary and binary operators are supported")
         # print("addOperator", name, composedFunc, arity)
     
-
     def delOperator(self, name, arity):
 
         if arity == 1:
@@ -158,7 +156,6 @@ class OperatorRegistry:
     def popAllStack(self, name):
         while not self.isStackEmpty(name):
             self.popStack(name)
-
 
     def callOperator(self, name):
         functionList = self.getOperator(name, 1)   

@@ -21,7 +21,7 @@ def main():
     is_tree = "--tree" in args
 
     if is_interactive: 
-        input_stream = InputStream(input('> '))
+        input_stream = InputStream(input('> Interactive Mode [Ctrl + C] to exit\n> '))
     elif file_name:
         if not os.path.isfile(file_name):
             print(f"Error: File '{file_name}' does not exist.", file=sys.stderr)
@@ -31,7 +31,6 @@ def main():
     else:
         print("Error: no input file specified.", file=sys.stderr)
         return
-    
     
     filtered_output = None
     if not is_test and is_tree:
@@ -86,7 +85,6 @@ def setParserTree(input_stream):
     tree = parser.program()
 
     return parser, tree
-
 
 def visitParserTree(visitor, parser, tree, is_debug):
     DebugConfig.set_debug_visits(is_debug)

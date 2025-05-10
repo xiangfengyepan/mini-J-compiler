@@ -102,7 +102,11 @@ make run ARGS='' === make runfile FILE="programa.j" ARGS=''
 make runfile FILE='arxiu.j' ARGS=''
 ```
 
-Aquesta comanda executarà el programa definit en el fitxer `.j` especificat. Pots afegir arguments opcionals com `--ia`, `--test`, `--debug`, o `--tree`.
+Aquesta comanda executarà el programa definit en el fitxer `.j` especificat. Pots afegir arguments opcionals com 
+- `--ia`: interactive execution
+- `--test`: generate .out
+- `--debug`: print enter and exit visit
+- `--tree`: print program tree estructure
 
 **3. Executar el programa amb arguments**
 
@@ -132,7 +136,7 @@ Aquesta comanda executarà el programa en mode depuració i tree, mostrant infor
 - **Gramàtica**:
   El programa es divideix en *statements*, els quals poden ser una expressió o una declaració.
   - Per a les expressions: estan separades les operacions aritmètiques en (unària, binària i *fold*).
-  - Per a les declaracions: les variables i les funcions es declaren de manera separada per simplicitat, tot i que podrien anar juntes. Igual que amb les operacions aritmètiques, la declaració de funcions també es divideix en (unària, binària i *fold*) que són `simpleOperators`, i després `composeOperators` amb l’operador **'@:'**.
+  - Per a les declaracions: les variables i les funcions es declaren de manera separada per poedr diferenciar-les de manera mes simple, tot i que podrien anar juntes. Igual que amb les operacions aritmètiques, la declaració de funcions també es divideix en (unària, binària i *fold*) que són `simpleOperators`, i després `composeOperators` amb l’operador **'@:'**.
 
 
 ---
@@ -148,3 +152,4 @@ Aquesta comanda executarà el programa en mode depuració i tree, mostrant infor
 - Què hauria d'incloure el README?
 - Funcions llargues, sintaxi de codi, comentaris?
 - dos2unix?
+- format codi?

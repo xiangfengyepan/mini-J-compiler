@@ -14,7 +14,6 @@ class EvalVisitor(gVisitor):
         self.operatorRegistry = OperatorRegistry()
         self.variables = {}
         
-
     @debug_visit
     def visitProgram(self, ctx):
         return self.visit(ctx.statements())
@@ -36,7 +35,6 @@ class EvalVisitor(gVisitor):
 
     @debug_visit
     def visitOperatorDeclaration(self, ctx):
-
         name = ctx.ID().getText()
         if self.operatorRegistry.getOperator(name, 1) is not None:
             self.operatorRegistry.popAllStack(name)
@@ -59,11 +57,11 @@ class EvalVisitor(gVisitor):
                 if isinstance(expr, gParser.VariableContext):
                     var_name = expr.ID().getText()
                     function = self.operatorRegistry.getOperator(var_name)
+                    stack = (self.operatorRegistry.getAllStack(var_name) if function is not None else self.visit(expr))
+                    self.operatorRegistry.pushStack(name, stack)
+                    
                     if function is not None:
-                        self.operatorRegistry.pushStack(name, self.operatorRegistry.getAllStack(var_name))
                         functionList.extend(normalize_to_list(function))
-                    else:
-                        self.operatorRegistry.pushStack(name, self.visit(expr))
                 else:
                     self.operatorRegistry.pushStack(name, self.visit(expr))
             else:
@@ -89,7 +87,6 @@ class EvalVisitor(gVisitor):
         except Exception as e:
             return f"error: {str(e)}"
 
-        
     @debug_visit
     def visitFoldOperators(self, ctx):
         try:
@@ -120,11 +117,11 @@ class EvalVisitor(gVisitor):
     def visitUnaryFuncCall(self, ctx):
         name = ctx.ID().getText()
         parameter = self.visit(ctx.expr())
+
         self.operatorRegistry.pushStack(name, parameter)
         result = self.operatorRegistry.callOperator(name)
         self.operatorRegistry.popStack(name)
         return result
-
 
     @debug_visit
     def visitValue(self, ctx):
