@@ -127,6 +127,24 @@ Aquesta comanda executarà el programa en mode depuració i tree, mostrant infor
 
 ## Decisions de Disseny
 
+
+TODO
+- **Operadors flip doble fold**:
+   Els operadors (flip, doble, fold) son operadores unaries que necesiten la presencia de un altre operador, pero no tots el operadors son compatibles amb aquest. Nomes els seguents:
+
+   - flip (reverteix el ordre dels operadors): qualsevol operador binary
+   - fold (reduccio del operador): '* /', '% /', '^ /', '| /', '+ /', '- /'
+   - doble (opera amb el mateix operant un operador binary): '+:', '*:'
+
+- **Declaracion de funcions**:
+   - Nomes es poden declarar funcions unaries, ja siguin compostes o no.
+   - Al decrar una funcio es indiferent afegir el operador identitat al final ].
+   exemple: ```a = 2 | ]``` equival a ```a = 2 |```
+
+- **Runtime Error**:
+   Si hi hagues algun runtime error es aturaria la execusio (excepte en mode interactiu, --ia) i mostraria el error.
+   *la divisio entre 0 dona 0 en numpy, per tant no es considera un error
+
 - **Composició d'Operadors**: El sistema admet operadors binaris i unitaris. També es poden compondre múltiples operadors dins de funcions. Els paràmetres de les funcions compostes es guarden en una pila (stack), igual que el paràmetre en la crida de la funció. D’aquesta manera, es guarden els valors i les funcions per separat per facilitar la crida a la funció. Les funcions tenen forma de llista per dividir les funcions compostes amb l’operador **'@:'**.
 
 - **Operadors unaris i binaris**: Al fitxer **OperatorRegister.py** es guarden els operadors bàsics de J, com per exemple **'+'** o **']'**, com a funcions lambda per ser cridades posteriorment dins de `<operator>Aritmetic`. Això permet reutilitzar-les a l’hora de definir funcions. En aquest tambe estan els metodoes per cridar funcions i manipular la pila de parametres.
@@ -143,18 +161,6 @@ Aquesta comanda executarà el programa en mode depuració i tree, mostrant infor
   Totes les crides a funció reben exactament un paràmetre, és a dir, els seus arguments són unaris.
 
 
----
 
 
-- Operadors amb flip doble fold
-- Funcions amb un màxim d'un paràmetre?
-- 2 | ]? -> 2 |
-- `_ +` com a operador unari?
-- ^: i -: no funcionen correctament...
-- Recursivitat?
-- Entrada d'usuari?
-- Què hauria d'incloure el README?
-- Funcions llargues, sintaxi de codi, comentaris?
-- dos2unix?
-- format codi?
-- divisio entre 0 dona 0 en numpy
+

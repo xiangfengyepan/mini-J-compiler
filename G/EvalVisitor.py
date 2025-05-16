@@ -124,7 +124,6 @@ class EvalVisitor(gVisitor):
         elif ctx.INTVAL() and len(ctx.INTVAL()) > 1:
             return np.array([elem.getText() for elem in ctx.INTVAL()], dtype=self.INT_TYPE)
 
-
     @debug_visit
     def visitBinaryAritmetic(self, ctx):
         lhs = self.visit(ctx.expr(0))

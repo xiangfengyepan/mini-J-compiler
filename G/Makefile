@@ -3,7 +3,7 @@ GRAMMAR=g.g4
 GEN_FILES=gLexer.py gParser.py gVisitor.py
 
 
-all: venv pristine test help
+all: venv pristine test
 
 antlr: $(GEN_FILES)
 
