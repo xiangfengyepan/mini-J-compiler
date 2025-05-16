@@ -41,7 +41,7 @@ class TreeVisitor(gVisitor):
 
     @debug_visit
     def visitBinaryAritmetic(self, ctx):
-        print('  ' * self.nivell + f"{" ".join([child.getText() for child in ctx.binaryOperators().getChildren()])}")
+        print('  ' * self.nivell + f"{' '.join([child.getText() for child in ctx.binaryOperators().getChildren()])}")
         self.nivell += 1
         self.visitChildren(ctx)
         self.nivell -= 1
@@ -49,7 +49,7 @@ class TreeVisitor(gVisitor):
     
     @debug_visit
     def visitUnaryAritmetic(self, ctx):
-        print('  ' * self.nivell + f"{" ".join([child.getText() for child in ctx.unaryOperators().getChildren()])}")
+        print('  ' * self.nivell + f"{' '.join([child.getText() for child in ctx.unaryOperators().getChildren()])}")
         self.nivell += 1
         self.visitChildren(ctx)
         self.nivell -= 1
@@ -57,7 +57,7 @@ class TreeVisitor(gVisitor):
     
     @debug_visit
     def visitFoldAritmetic(self, ctx):
-        print('  ' * self.nivell + f"{" ".join([child.getText() for child in ctx.foldOperators().getChildren()])}")
+        print('  ' * self.nivell + f"{' '.join([child.getText() for child in ctx.foldOperators().getChildren()])}")
         self.nivell += 1
         self.visitChildren(ctx)
         self.nivell -= 1
