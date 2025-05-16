@@ -12,15 +12,19 @@ L'intèrpret permet executar programes escrits en J, amb funcionalitats com depu
 - NumPy (per operacions aritmètiques i gestió d'arrays)
 - Eines addicionals: `python3-venv` `make`, `dos2unix`, `delta`, `jconsole` (versió 9.6)
 
-TODO
 ## Estructura del Projecte
-|- G
-   |- programes.py....
-|- j9.6: compilarodr de J
-|- tests
-   |- basics: testos basic donats pel encuciat
-   |- complex: testos mes complexos propis
-|- myTest: script per executar els testos
+
+- `G/`
+  - `programes.py` – Fitxer principal amb la lògica del programa
+  - `Makefile` – Arxiu Make per automatitzar tasques com la compilació o els tests
+
+- `j9.6/` – Compilador de J versió 9.6 necessari per al projecte
+
+- `tests/` – Carpeta amb proves per validar el funcionament
+  - `basics/` – Testos bàsics proporcionats per l'enunciat
+  - `complex/` – Testos més complexos dissenyats pel desenvolupador
+
+- `myTest/` – Script personalitzat per executar tots els tests
 
 ## Arxius del la carpeta G 
 
@@ -137,23 +141,23 @@ Aquesta comanda executarà el programa en mode depuració i tree, mostrant infor
 
 ## Decisions de Disseny
 
+- **Operadors `flip`, `doble`, `fold` i `<>`**:
+  Aquests són operadors unaris que necessiten la presència d’un altre operador per funcionar. No obstant això, no tots els operadors són compatibles. Els que sí ho són:
 
-TODO
-- **Operadors flip doble fold**:
-   Els operadors (flip, doble, fold) son operadores unaries que necesiten la presencia de un altre operador, pero no tots el operadors son compatibles amb aquest. Nomes els seguents:
+  - `flip` (reverteix l’ordre dels operadors): compatible amb qualsevol operador binari.
+  - `fold` (reducció de l’operador): compatible amb `* /`, `% /`, `^ /`, `| /`, `+ /`, `- /`.
+  - `doble` (aplica l’operador binari al mateix operand dues vegades): compatible amb `+:`, `*:` .
+  - `<>`: en el compilador J no funciona correctament, però en aquest intèrpret sí que ho fa.
 
-   - flip (reverteix el ordre dels operadors): qualsevol operador binary
-   - fold (reduccio del operador): '* /', '% /', '^ /', '| /', '+ /', '- /'
-   - doble (opera amb el mateix operant un operador binary): '+:', '*:'
+- **Declaració de funcions**:
+  - Només es poden declarar funcions unàries, siguin compostes o simples.
+  - A l’hora de declarar una funció, és indiferent afegir l’operador identitat (`]`) al final.
+    Exemple: `a = 2 | ]` és equivalent a `a = 2 |`.
 
-- **Declaracion de funcions**:
-   - Nomes es poden declarar funcions unaries, ja siguin compostes o no.
-   - Al decrar una funcio es indiferent afegir el operador identitat al final ].
-   exemple: ```a = 2 | ]``` equival a ```a = 2 |```
+- **Runtime Errors**:
+  - Si es produeix un error d'execució (runtime error), el programa s'aturarà (excepte en mode interactiu amb l’opció `--ia`) i es mostrarà l’error corresponent.
+  - Nota: la divisió entre 0 no genera error perquè en NumPy retorna 0 per defecte. Per tant, no es considera un error en aquest context.
 
-- **Runtime Error**:
-   Si hi hagues algun runtime error es aturaria la execusio (excepte en mode interactiu, --ia) i mostraria el error.
-   *la divisio entre 0 dona 0 en numpy, per tant no es considera un error
 
 - **Composició d'Operadors**: El sistema admet operadors binaris i unitaris. També es poden compondre múltiples operadors dins de funcions. Els paràmetres de les funcions compostes es guarden en una pila (stack), igual que el paràmetre en la crida de la funció. D’aquesta manera, es guarden els valors i les funcions per separat per facilitar la crida a la funció. Les funcions tenen forma de llista per dividir les funcions compostes amb l’operador **'@:'**.
 
