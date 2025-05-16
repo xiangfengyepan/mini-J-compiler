@@ -1,6 +1,5 @@
 square =: *:
 square 1 + i. 3    NB. resultat: 1 4 9
-a
 mod2 =: 2 |
 eq0 =: 0 = ]
 

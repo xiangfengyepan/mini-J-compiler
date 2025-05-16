@@ -12,6 +12,30 @@ L'intèrpret permet executar programes escrits en J, amb funcionalitats com depu
 - NumPy (per operacions aritmètiques i gestió d'arrays)
 - Eines addicionals: `python3-venv` `make`, `dos2unix`, `delta`, `jconsole` (versió 9.6)
 
+TODO
+## Estructura del Projecte
+|- G
+   |- programes.py....
+|- j9.6: compilarodr de J
+|- tests
+   |- basics: testos basic donats pel encuciat
+   |- complex: testos mes complexos propis
+|- myTest: script per executar els testos
+
+## Arxius del la carpeta G 
+
+| Arxiu | Descripció |
+|-------|-----------|
+| `g.g4` | Gramàtica del llenguatge definida amb ANTLR |
+| `TreeVisitor.py` | Visitor que imprimeix l'arbre del programa (mode `--tree`) |
+| `EvalVisitor.py` | Visitor que avalua el programa |
+| `OperatorRegistry.py` | Mòdul per gestionar operadors, composició de funcions i piles per els parametres |
+| `utils.py` | Eines per a la depuració, errors listenners i el format del output del programa |
+| `g.py` | Script principal que executa el llenguatge amb diferents modes (`--debug`, `--tree`, `--ia`, --test) |
+| `Makefile` | Automatitza la generació, neteja i execució de l'intèrpret |
+| `myTest` | Script per a l'automatització de proves de l'intèrpret |
+
+
 ## Guia d'Instal·lació i Execució
 
 **1. Instal·la les utilitats necessàries**
@@ -51,20 +75,6 @@ Verifica que tot estigui llest executant una prova amb el program per defecte pr
    ```
 
 ---
-
-## Arxius del Projecte
-
-| Arxiu | Descripció |
-|-------|-----------|
-| `g.g4` | Gramàtica del llenguatge definida amb ANTLR |
-| `TreeVisitor.py` | Visitor que imprimeix l'arbre del programa (mode `--tree`) |
-| `EvalVisitor.py` | Visitor que avalua el programa |
-| `OperatorRegistry.py` | Mòdul per gestionar operadors, composició de funcions i piles per els parametres |
-| `utils.py` | Eines per a la depuració, errors listenners i el format del output del programa |
-| `g.py` | Script principal que executa el llenguatge amb diferents modes (`--debug`, `--tree`, `--ia`, --test) |
-| `Makefile` | Automatitza la generació, neteja i execució de l'intèrpret |
-| `myTest` | Script per a l'automatització de proves de l'intèrpret |
-
 
 ## Ús del interpret
 
@@ -149,7 +159,7 @@ TODO
 
 - **Operadors unaris i binaris**: Al fitxer **OperatorRegister.py** es guarden els operadors bàsics de J, com per exemple **'+'** o **']'**, com a funcions lambda per ser cridades posteriorment dins de `<operator>Aritmetic`. Això permet reutilitzar-les a l’hora de definir funcions. En aquest tambe estan els metodoes per cridar funcions i manipular la pila de parametres.
 
-- **Tests**: El projecte inclou un conjunt de proves automatitzades que es poden executar amb `make test` per verificar el bon funcionament de l’intèrpret.
+- **Tests**: El projecte inclou un conjunt de proves automatitzades, en la carpeta tests, que es poden executar amb `make test` per verificar el bon funcionament de l’intèrpret.
 
 - **Gramàtica**:
   El programa es divideix en *statements*, els quals poden ser una expressió o una declaració.
