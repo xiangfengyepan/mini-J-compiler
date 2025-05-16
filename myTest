@@ -74,13 +74,11 @@ find "$INPUT_DIR" -name "*.j" | while read -r jfile; do
     if [[ "$should_exclude" == false ]]; then
         base_name=$(basename "$jfile" .j)
         dir_name=$(dirname "$jfile")
-        input_file="${dir_name}/${base_name}.inp"
-
         error_file="../tests/error.err"
 
         (
         . venv/bin/activate
-        python3 g.py --test "$jfile" < "$input_file" 2> "$error_file"
+        python3 g.py --test "$jfile" 2> "$error_file"
         )
 
         if [[ -s "$error_file" ]]; then
