@@ -59,6 +59,7 @@ L'intèrpret permet executar programes escrits en J, amb funcionalitats com depu
    make
    ```
    Aixo crear el entorn virtual amb les dependencies juntament amb el test i finalment el make help
+   * Nota: Aixo pot tardar bastant pero nomes s'ha de fer un cop
 
 **2b. Execució manual**:
 Instal·la l'entorn virtual i les dependències
