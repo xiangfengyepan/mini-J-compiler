@@ -147,7 +147,8 @@ Aquesta comanda executarà el programa en mode depuració i tree, mostrant infor
 
   - `flip` (reverteix l’ordre dels operadors): compatible amb qualsevol operador binari.
   - `fold` (reducció de l’operador): compatible amb `* /`, `% /`, `^ /`, `| /`, `+ /`, `- /`.
-  - `doble` (aplica l’operador binari al mateix operand dues vegades): compatible amb `+:`, `*:` .
+  - `doble` (aplica l’operador binari al mateix operand dues vegades): compatible amb `+:`, `*:`.
+    * El `^:` en J no existeix i els altres operadoes binaris con per exemple `-:` no tenen sentit, ya que el resultat sera el mateix sempre.
   - `<>`: en el compilador J no funciona correctament, però en aquest intèrpret sí que ho fa.
 
 - **Declaració de funcions**:
