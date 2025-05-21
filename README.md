@@ -49,8 +49,13 @@ L'intèrpret permet executar programes escrits en J, amb funcionalitats com depu
    ```bash
    sudo apt update && sudo apt install -y dos2unix delta
    ```
-   dos2unix: Converteix els finals de línia entre formats DOS/Windows i UNIX
-   delta: Millorador de visualització de diffs
+   - dos2unix: Converteix els finals de línia entre formats DOS/Windows i UNIX
+   - delta: Millorador de visualització de diffs
+
+   ```bash
+   cd G
+   ```
+   per cambiar al directory on esta el Makefile
 
 **2a. Execució ràpida**:
    Pots directament executar 
@@ -59,15 +64,16 @@ L'intèrpret permet executar programes escrits en J, amb funcionalitats com depu
    make
    ```
    Aixo crear el entorn virtual amb les dependencies juntament amb el test i finalment el make help
-   * Nota: Aixo pot tardar bastant pero nomes s'ha de fer un cop
+   * Nota: Aixo pot tardar bastant pero nomes es necessari el primer cop i despres de fer un make pristine
 
 **2b. Execució manual**:
-Instal·la l'entorn virtual i les dependències
+Instal·la l'entorn virtual i les dependències ()
    ```bash
    make venv
    ```
+   * Nota: Aixo pot tardar bastant pero nomes es necessari el primer cop i despres de fer un make pristine
 
-Genera nomes els fitxers d'ANTLR
+  **Opcional** Genera nomes els fitxers d'ANTLR (make run tambe executara make antlr)
 
    ```bash
    make antlr
