@@ -3,7 +3,7 @@ GRAMMAR=g.g4
 GEN_FILES=gLexer.py gParser.py gVisitor.py
 
 
-all: venv pristine test
+all: pristine venv test
 
 antlr: $(GEN_FILES)
 
@@ -17,7 +17,7 @@ realclean: clean
 	rm -f g.tokens g.interp gLexer.tokens gLexer.interp gListener.py
 
 pristine: realclean
-	rm -rf __pycache__ .antlr
+	rm -rf __pycache__ .antlr venv
 
 venv:
 	@echo "Creates a virtual environment and installs dependencies, this may take a while"
