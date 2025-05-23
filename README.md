@@ -42,9 +42,14 @@ L'intèrpret permet executar programes escrits en J, amb funcionalitats com depu
 
 TODO
 ## Testos self
-- Aquest test en particular no comproba funcionalitats basiques com els operadors basics, la prioritat, etc ya que aquest ya estan 
+- Aquest test en particular no comproba funcionalitats basiques com els operadors basics, variables, la prioritat, etc ya que aquest ya estan 
  en el tests/basics. 
-- Tampoc es comproba es error de execucio ya que suposarem que no hi han.  
+
+- Les parts commentades estan perque la auto correccio del test que compara el output del J funcioni. 
+Pero aquest funciona com s'espera, per comprobar-ho es pot executar en el programa.j. 
+
+- Es comproba el funcionament dels operadoes unaris i binaris, convinanlos i tambe que els casos de error es mostrin correctament.
+
 
 
 
@@ -170,6 +175,7 @@ Els array de llargada 1 es tracten com a un valor no com una llista
 
 - **Declaració de funcions**:
   - Només es poden declarar funcions unàries, siguin compostes o simples.
+  - El operador `#` potser tant unary com binary, pero al declarar una funcio considerarem que es el operador binary i no el unary.
   - A l’hora de declarar una funció, és indiferent afegir l’operador identitat (`]`) al final.
     Exemple: `a = 2 | ]` és equivalent a `a = 2 |`.
 
@@ -184,6 +190,9 @@ Els array de llargada 1 es tracten com a un valor no com una llista
 
 - **Tests**: El projecte inclou un conjunt de proves automatitzades, en la carpeta tests, que es poden executar amb `make test` per verificar el bon funcionament de l’intèrpret.
 
+  - Hi han parts commentades perque el resultat en J no coincideix amb el esperat, pero el resultat es valid.
+  - En el test.out no apareixen els runtime errors per poder comparar amb J.
+
 - **Gramàtica**:
   El programa es divideix en *statements*, els quals poden ser una expressió o una declaració.
   - Per a les expressions: es diferencien les operacions aritmètiques en (unària, binària i *fold*).
@@ -196,4 +205,6 @@ Els array de llargada 1 es tracten com a un valor no com una llista
 
 
 
-
+- mascara 
+  1 0 1 5 # 1 2 , 3 4 -> output?
+- | / -> ordre dels operants
