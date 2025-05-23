@@ -22,7 +22,8 @@ L'intèrpret permet executar programes escrits en J, amb funcionalitats com depu
 
 - `tests/` – Carpeta amb proves per validar el funcionament
   - `basics/` – Testos bàsics proporcionats per l'enunciat
-  - `complex/` – Testos més complexos dissenyats pel desenvolupador
+  - `complex/` – Testos més complexos dissenyats pel chatGPT
+  - `self/` - Testos dissenyats pel dessenvolupador
 
 - `myTest/` – Script personalitzat per executar tots els tests
 
@@ -63,7 +64,7 @@ L'intèrpret permet executar programes escrits en J, amb funcionalitats com depu
    ```bash
    make
    ```
-   Aixo crear el entorn virtual amb les dependencies juntament amb el test i finalment el make help
+   Aixo crear el entorn virtual amb les dependencies juntament amb el test
    * Nota: Aixo pot tardar bastant pero nomes es necessari el primer cop i despres de fer un make pristine
 
 **2b. Execució manual**:

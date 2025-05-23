@@ -41,7 +41,6 @@ class EvalVisitor(gVisitor):
         composedFunction = []
         for child in ctx.composeOperators().getChildren():
             if child.getText() == gParser.literalNames[gParser.COMPOSE].strip("'"):
-                # TODO only add unary operators
                 self.operatorRegistry.addOperator(name, composedFunction, 1)
                 composedFunction = []
                 continue
@@ -62,7 +61,6 @@ class EvalVisitor(gVisitor):
             if function is not None:
                 composedFunction.extend(normalize_to_list(function))
         
-        # TODO only add unary operators
         self.operatorRegistry.addOperator(name, composedFunction, 1)
         
     @debug_visit
@@ -85,10 +83,7 @@ class EvalVisitor(gVisitor):
     def visitFoldOperators(self, ctx):
         try:
             op_symbol = ctx.getChild(0).getText()
-            op = self.operatorRegistry.getFoldOperator(op_symbol)
-            myFold = self.operatorRegistry.getOperator(ctx.FOLD().getText(), 2)
-    
-            return lambda x: myFold(op, x).astype(self.INT_TYPE)
+            return self.operatorRegistry.getFoldOperator(op_symbol)
         
         except Exception as e:
             return f"error: {str(e)}"
