@@ -29,15 +29,22 @@ class TreeVisitor(gVisitor):
         self.visitChildren(ctx)
         self.nivell -= 1
         return
+    
+    @debug_visit
+    def visitList(self, ctx):
+        if (len(ctx.intval()) == 1):
+            print("  " * self.nivell + self.visit(ctx.intval(0)))
+            return   
+        values = [self.visit(elem) for elem in ctx.intval()]
+        print("  " * self.nivell + " ".join(values))
 
     @debug_visit
-    def visitValue(self, ctx):
-        if ctx.INTVAL() and len(ctx.INTVAL()) == 1:
-            print("  " * self.nivell + ctx.INTVAL(0).getText())
-        elif ctx.INTVAL() and len(ctx.INTVAL()) > 1:
-            values = [elem.getText() for elem in ctx.INTVAL()]
-            print("  " * self.nivell + " ".join(values))
-        return
+    def visitPositive(self, ctx):
+        return ctx.NUM().getText()
+        
+    @debug_visit
+    def visitNegative(self, ctx):
+        return '_' + ctx.NUM().getText()
 
     @debug_visit
     def visitBinaryAritmetic(self, ctx):

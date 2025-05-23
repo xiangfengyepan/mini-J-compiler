@@ -45,7 +45,6 @@ class OperatorRegistry:
             ']': lambda x: x,
             '#': lambda x: np.int32(np.atleast_1d(x).size),
             'i.': lambda x: np.arange(x).astype(np.int32),
-            '_': lambda x: -x,
             '+': lambda x: x,
 
             '*:': lambda x: np.multiply(x, x),

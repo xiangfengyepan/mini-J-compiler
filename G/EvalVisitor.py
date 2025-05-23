@@ -113,11 +113,18 @@ class EvalVisitor(gVisitor):
         return result
 
     @debug_visit
-    def visitValue(self, ctx):
-        if ctx.INTVAL() and len(ctx.INTVAL()) == 1:
-            return self.INT_TYPE(ctx.INTVAL(0).getText())
-        elif ctx.INTVAL() and len(ctx.INTVAL()) > 1:
-            return np.array([elem.getText() for elem in ctx.INTVAL()], dtype=self.INT_TYPE)
+    def visitList(self, ctx):
+        if (len(ctx.intval()) == 1):
+            return self.visit(ctx.intval(0))
+        return np.array([self.visit(elem) for elem in ctx.intval()], dtype=self.INT_TYPE)
+
+    @debug_visit
+    def visitPositive(self, ctx):
+        return self.INT_TYPE(ctx.NUM().getText())
+        
+    @debug_visit
+    def visitNegative(self, ctx):
+        return -self.INT_TYPE(ctx.NUM().getText())
 
     @debug_visit
     def visitBinaryAritmetic(self, ctx):

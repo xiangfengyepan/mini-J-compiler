@@ -32,8 +32,7 @@ simpleOperators
 
 unaryOperators
     : (MULD|PLUSD|
-        IDENTITY|HASH|ARANGE|
-        NEG)    
+        IDENTITY|HASH|ARANGE)   
     ;              
 foldOperators
     : (MUL|DIV|POW|MOD|
@@ -55,13 +54,19 @@ expr
 
     | foldOperators expr                            # foldAritmetic
 
-    | PLUS? INTVAL+                                 # value
+    | intval+                                       # list
     | ID                                            # variable
 
     | ID expr                                       # unaryFuncCall  
 
     ;
 
+intval     
+    :  NUM      # positive
+    |  NEG NUM  # negative
+    ;
+
+NEG         : '_' ;
 
 ASSIGN      : '=:';
 EQUAL       : '=' ;
@@ -70,9 +75,6 @@ LT          : '<' ;
 GT          : '>' ;
 LE          : '<=' ;
 GE          : '>=' ;
-
-NEG         : '_' ;
-
 PLUS        : '+' ;
 MINUS       : '-' ;
 MUL         : '*' ;
@@ -93,7 +95,8 @@ MULD        : '*:' ;
 
 COMPOSE     : '@:' ;
 
-INTVAL    : ('0'..'9')+ ;
+NUM         : [0-9]+ ;
+
 ID        : ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
 
 NEWLINE : '\r'? '\n' ;
