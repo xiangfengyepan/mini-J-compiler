@@ -36,32 +36,42 @@ class EvalVisitor(gVisitor):
     @debug_visit
     def visitOperatorDeclaration(self, ctx):
         name = ctx.ID().getText()
+        
+        # clear function and stack if it was already declared
         if self.operatorRegistry.getOperator(name, 1) is not None:
             self.operatorRegistry.delOperator(name, 1)
 
         composedFunction = []
         for child in ctx.composeOperators().getChildren():
+            # add composedFunction to Operator when find a "@:" 
             if child.getText() == gParser.literalNames[gParser.COMPOSE].strip("'"):
                 self.operatorRegistry.addOperator(name, composedFunction, 1)
                 composedFunction = []
                 continue
 
+            
+            function = self.visit(child) # Case an already declared funcion (unary, binary, fold)
+
+            # An expr (variable or value)
             expr = child.expr()
-            function = self.visit(child)
             if expr:
                 stack = self.visit(expr)
-                function = None
-                if isinstance(expr, gParser.VariableContext):
+                function = None # Case for an expr value
+
+                # Case for VariableContext that is a function 
+                if isinstance(expr, gParser.VariableContext):                    
                     var_name = expr.ID().getText()
                     function = self.operatorRegistry.getOperator(var_name)
                     if function is not None:
                         stack = self.operatorRegistry.getAllStack(var_name)
                 
+                # push stack the value or the stask of the function
                 self.operatorRegistry.pushStack(name, stack)
-
+            
             if function is not None:
                 composedFunction.extend(normalize_to_list(function))
         
+        # For the last composedFunction
         self.operatorRegistry.addOperator(name, composedFunction, 1)
         
     @debug_visit
