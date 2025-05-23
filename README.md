@@ -40,6 +40,13 @@ L'intèrpret permet executar programes escrits en J, amb funcionalitats com depu
 | `Makefile` | Automatitza la generació, neteja i execució de l'intèrpret |
 | `myTest` | Script per a l'automatització de proves de l'intèrpret |
 
+TODO
+## Testos self
+- Aquest test en particular no comproba funcionalitats basiques com els operadors basics, la prioritat, etc ya que aquest ya estan 
+ en el tests/basics. 
+- Tampoc es comproba es error de execucio ya que suposarem que no hi han.  
+
+
 
 ## Guia d'Instal·lació i Execució
 
@@ -80,10 +87,10 @@ Instal·la l'entorn virtual i les dependències ()
    make antlr
    ```
 
-Verifica que tot estigui llest executant una prova amb el program per defecte programa.j
+Verifica que tot estigui llest executant els testos
 
    ```bash
-   make run
+   make test
    ```
 
 ---
@@ -148,6 +155,9 @@ Aquesta comanda executarà el programa en mode depuració i tree, mostrant infor
 ---
 
 ## Decisions de Disseny
+
+- **Valors**:
+Els array de llargada 1 es tracten com a un valor no com una llista
 
 - **Operadors `flip`, `doble`, `fold` i `<>`**:
   Aquests són operadors unaris que necessiten la presència d’un altre operador per funcionar. No obstant això, no tots els operadors són compatibles. Els que sí ho són:
