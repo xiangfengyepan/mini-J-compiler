@@ -24,8 +24,8 @@ composeOperators
     ;
 
 simpleOperators
-    : unaryOperators
-    | binaryOperators
+    : binaryOperators
+    | unaryOperators
     | foldOperators                   
     | expr
     ;
