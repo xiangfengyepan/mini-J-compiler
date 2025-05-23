@@ -7,15 +7,6 @@ from gParser import gParser
 class OperatorRegistry:
     def __init__(self):
         super().__init__()
-        
-        self.foldOperator = {
-            '*': lambda x: reduce(np.multiply, x),
-            '%': lambda x: reduce(np.floor_divide, x),
-            '+': lambda x: reduce(np.add, x),
-            '-': lambda x: reduce(np.subtract, x),
-            '^': lambda x: reduce(np.power, x),
-            '|': lambda x: reduce(np.mod, x),
-        }
 
         self.binaryOperators = {
             '*': lambda lhs, rhs: np.multiply(lhs, rhs),
@@ -50,7 +41,7 @@ class OperatorRegistry:
             '*:': lambda x: np.multiply(x, x),
             '+:': lambda x: np.add(x, x),
             '^:': lambda x: np.power(x, x),
-            ',:': lambda x: np.concatenate((np.atleast_1d(x), np.atleast_1d(x))),
+            ',:': lambda x: np.concatenate((np.atleast_1d(x), np.atleast_1d(rhs))),
 
         }
 
@@ -77,9 +68,6 @@ class OperatorRegistry:
 
             return args
         return composed
-
-    def getFoldOperator(self, op_symbol):
-        return self.foldOperator.get(op_symbol)
 
     def addOperator(self, name, funcs, arity):
         if len(funcs) == 1 and funcs[0].__name__ == "composed":

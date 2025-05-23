@@ -1,4 +1,5 @@
 import numpy as np
+from functools import reduce 
 
 from OperatorRegistry import OperatorRegistry
 from gParser import gParser
@@ -83,7 +84,8 @@ class EvalVisitor(gVisitor):
     def visitFoldOperators(self, ctx):
         try:
             op_symbol = ctx.getChild(0).getText()
-            return self.operatorRegistry.getFoldOperator(op_symbol)
+            binaryOperator = self.operatorRegistry.getOperator(op_symbol, 2)
+            return lambda x: reduce(binaryOperator, x)
         
         except Exception as e:
             return f"error: {str(e)}"

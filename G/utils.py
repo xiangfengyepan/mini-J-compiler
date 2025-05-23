@@ -10,6 +10,7 @@ class DebugConfig:
     def set_debug_visits(value: bool):
         DebugConfig.visits_enabled = value
 
+
 def debug_visit(func):
     def wrapper(self, ctx):
         indent = '\t' * DebugConfig.visit_depth
@@ -75,6 +76,7 @@ class MyPrinter:
         print()
         print("CodeGen Visitor Results")
         print(f"{CYAN}==========================={RESET}")
+
 
 def normalize_to_list(item):
     return item if isinstance(item, list) else [item]
