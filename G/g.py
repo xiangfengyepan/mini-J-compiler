@@ -90,8 +90,7 @@ def visitParserTree(visitor, parser, tree, is_debug):
     DebugConfig.set_debug_visits(is_debug)
 
     if parser.getNumberOfSyntaxErrors() > 0:
-        print(parser.getNumberOfSyntaxErrors(), 'syntax error', file=sys.stderr)
-        print(tree.toStringTree(recog=parser), file=sys.stderr)
+        print(parser.getNumberOfSyntaxErrors(), 'syntax error found :(', file=sys.stderr)
         return None
 
     return process_tree(visitor, tree)
