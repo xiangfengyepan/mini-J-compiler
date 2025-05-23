@@ -49,6 +49,9 @@ class OperatorRegistry:
 
             '*:': lambda x: np.multiply(x, x),
             '+:': lambda x: np.add(x, x),
+            '^:': lambda x: np.power(x, x),
+            ',:': lambda x: np.concatenate((np.atleast_1d(x), np.atleast_1d(x))),
+
         }
 
         self.stack = {}
