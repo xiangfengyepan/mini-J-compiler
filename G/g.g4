@@ -24,8 +24,8 @@ composeOperators
     ;
 
 simpleOperators
-    : binaryOperators
-    | unaryOperators
+    : unaryOperators
+    | binaryOperators
     | foldOperators                   
     | expr
     ;
@@ -93,7 +93,7 @@ FLIP        : '~' ;
 PLUSD       : '+:' ;
 MULD        : '*:' ;
 POWD        : '^:' ;
-CONCATD        : ',:' ;
+CONCATD     : ',:' ;
 
 
 COMPOSE     : '@:' ;

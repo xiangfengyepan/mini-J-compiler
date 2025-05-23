@@ -75,7 +75,7 @@ def setParserTree(input_stream):
 
     if lexical_errors:
         for error in lexical_errors:
-            print(f"Lexical error found: '{error.text}' at line {error.line}, column {error.column}", file=sys.stderr)
+            print(f"Uff, Lexical error found: '{error.text}' at line {error.line}, column {error.column}", file=sys.stderr)
         print("Aborting execution due to lexical errors :(", file=sys.stderr)
         exit(0)
         

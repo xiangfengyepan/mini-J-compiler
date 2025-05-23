@@ -27,8 +27,6 @@ class OperatorRegistry:
             '<=': lambda lhs, rhs: np.less_equal(lhs, rhs).astype(np.int32),
             '>=': lambda lhs, rhs: np.greater_equal(lhs, rhs).astype(np.int32),
 
-            '~': lambda lhs, rhs: (rhs, lhs),
-
             '/': lambda op, x: op.reduce(np.array(x, dtype=np.int32)),
         }
 
@@ -41,7 +39,7 @@ class OperatorRegistry:
             '*:': lambda x: np.multiply(x, x),
             '+:': lambda x: np.add(x, x),
             '^:': lambda x: np.power(x, x),
-            ',:': lambda x: np.concatenate((np.atleast_1d(x), np.atleast_1d(rhs))),
+            ',:': lambda x: np.concatenate((np.atleast_1d(x), np.atleast_1d(x))),
 
         }
 

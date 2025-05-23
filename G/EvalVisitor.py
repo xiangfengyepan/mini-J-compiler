@@ -78,7 +78,11 @@ class EvalVisitor(gVisitor):
     def visitBinaryOperators(self, ctx):
         try:
             name = ctx.getChild(0).getText()
-            return self.operatorRegistry.getOperator(name, 2)
+            binaryOperator = self.operatorRegistry.getOperator(name, 2)
+
+            if ctx.FLIP():
+                return lambda lhs, rhs: binaryOperator(rhs, lhs)
+            return binaryOperator
         except Exception as e:
             return f"error: {str(e)}"
 
@@ -142,9 +146,6 @@ class EvalVisitor(gVisitor):
     def visitBinaryAritmetic(self, ctx):
         lhs = self.visit(ctx.expr(0))
         rhs = self.visit(ctx.expr(1))
-
-        if ctx.binaryOperators().FLIP():
-            lhs, rhs = rhs, lhs 
 
         try:
             operator = self.visit(ctx.binaryOperators())

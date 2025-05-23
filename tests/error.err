@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/mnt/c/Users/XF/Documents/Programs/UPC_gitProjects/mini-J-compiler/G/g.py", line 2, in <module>
+    from antlr4 import *
+  File "/mnt/c/Users/XF/Documents/Programs/UPC_gitProjects/mini-J-compiler/G/venv/lib/python3.12/site-packages/antlr4/__init__.py", line 8, in <module>
+    from antlr4.Parser import Parser
+  File "/mnt/c/Users/XF/Documents/Programs/UPC_gitProjects/mini-J-compiler/G/venv/lib/python3.12/site-packages/antlr4/Parser.py", line 22, in <module>
+    from antlr4.tree.ParseTreePatternMatcher import ParseTreePatternMatcher
+  File "/mnt/c/Users/XF/Documents/Programs/UPC_gitProjects/mini-J-compiler/G/venv/lib/python3.12/site-packages/antlr4/tree/ParseTreePatternMatcher.py", line 73, in <module>
+    from antlr4.tree.RuleTagToken import RuleTagToken
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1322, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 1262, in _find_spec
+  File "<frozen importlib._bootstrap_external>", line 1528, in find_spec
+  File "<frozen importlib._bootstrap_external>", line 1502, in _get_spec
+  File "<frozen importlib._bootstrap_external>", line 1601, in find_spec
+  File "<frozen importlib._bootstrap_external>", line 147, in _path_stat
+KeyboardInterrupt
