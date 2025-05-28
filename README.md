@@ -60,15 +60,16 @@ Pero aquest funciona com s'espera, per comprobar-ho es pot executar en el progra
    Per garantir el funcionament correcte de `myTest`, instal·la els paquets requerits:
 
    ```bash
-   sudo apt update && sudo apt install -y dos2unix delta
+   sudo apt update && sudo apt install -y dos2unix delta python3.12-venv
    ```
    - dos2unix: Converteix els finals de línia entre formats DOS/Windows i UNIX
    - delta: Millorador de visualització de diffs
+   - python3.12-venv: Entorn virtual de python
 
+   Despres cambiar al directory on esta el Makefile
    ```bash
    cd G
    ```
-   per cambiar al directory on esta el Makefile
 
 **2a. Execució ràpida**:
    Pots directament executar 
@@ -201,10 +202,3 @@ Els array de llargada 1 es tracten com a un valor no com una llista
   Igual que amb les operacions aritmètiques, la declaració de funcions també es divideix en (unària, binària i *fold*) que són `simpleOperators`, i després `composeOperators` amb l’oper
 
   Totes les crides a funció reben exactament un paràmetre, és a dir, els seus arguments són unaris.
-
-
-
-
-- mascara 
-  1 0 1 5 # 1 2 , 3 4 -> output?
-- | / -> ordre dels operants
