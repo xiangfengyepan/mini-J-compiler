@@ -41,7 +41,6 @@ class OperatorRegistry:
             '^:': lambda x: np.power(x, x),
             ',:': lambda x: np.concatenate((np.atleast_1d(x), np.atleast_1d(x))),
             '#:': lambda x: np.array(x)[np.array(x, dtype=bool)],
-
         }
 
         self.stack = {}

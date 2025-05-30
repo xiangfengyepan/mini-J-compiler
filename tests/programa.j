@@ -2,6 +2,8 @@
 1 , ] _2 3                  NB. 1 _2 3
 # _1 , ] 2 3                NB. 3
 
+a                           NB. error varialbe
+
 
 NB. Mascara a # b
 NB. Pre: len(a) == len(b)

@@ -40,17 +40,16 @@ L'intèrpret permet executar programes escrits en J, amb funcionalitats com depu
 | `Makefile` | Automatitza la generació, neteja i execució de l'intèrpret |
 | `myTest` | Script per a l'automatització de proves de l'intèrpret |
 
-TODO
-## Testos self
-- Aquest test en particular no comproba funcionalitats basiques com els operadors basics, variables, la prioritat, etc ya que aquest ya estan 
- en el tests/basics. 
+
+## Testos
+- El test **self** en particular no comproba funcionalitats basiques com els operadors basics, variables, la prioritat, etc ya que aquest ya estan en el tests/basics. 
+
+- Tambe es comproba el funcionament dels operadoes unaris i binaris, convinanlos i tambe que els casos de error es mostrin correctament.
+
+- En el test complex estan algun testos generats per chatGPT per probar el funcionament correcte.
 
 - Les parts commentades estan perque la auto correccio del test que compara el output del J funcioni. 
 Pero aquest funciona com s'espera, per comprobar-ho es pot executar en el programa.j. 
-
-- Es comproba el funcionament dels operadoes unaris i binaris, convinanlos i tambe que els casos de error es mostrin correctament.
-
-
 
 
 ## Guia d'Instal·lació i Execució
@@ -121,14 +120,30 @@ Verifica que tot estigui llest executant els testos
 
 ### Execució de l'Intèrpret
 
-Per executar l'intèrpret, pots utilitzar les següents comandes:
+**NOTA**: Es pot executar amb el redireccionament de sortida amb 
+```bash 
+python3 g.py ../tests/programa.j > sortida.txt
+```
+con esta en el enuciat.
+Pero per temes de presentacio en terminal, les dos primeres lines aparaixera
+```bash 
+CodeGen Visitor Results [96m===========================[0m 
+```
+Els caracter raros son per poder printegar color en terminal. 
+
+
+Tambe, pots utilitzar les següents comandes:
 
 **1. Executar programa.j**
 
 `make run ARGS=''` utilitzarà el fitxer per defecte, que és el mateix que executar:
 
 ```bash
-make run ARGS='' === make runfile FILE="programa.j" ARGS=''
+make run ARGS='' 
+``` 
+equivalent a 
+```bash 
+ make runfile FILE="programa.j" ARGS=''
 ```
 
 **2. Executar un fitxer J**

@@ -112,12 +112,14 @@ class EvalVisitor(gVisitor):
     def visitVariable(self, ctx):
         name = ctx.ID().getText()
         
-        var = self.operatorRegistry.getOperator(name)
-        if var is None:
-            var = self.variables[name]
-        
-        return var
-    
+        try: 
+            var = self.operatorRegistry.getOperator(name)
+            if var is None:
+                var = self.variables[name]
+            
+            return var
+        except Exception as e:
+            return f"error: {str(e)}"
     @debug_visit
     def visitUnaryFuncCall(self, ctx):
         name = ctx.ID().getText()
