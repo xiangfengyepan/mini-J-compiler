@@ -31,7 +31,7 @@ simpleOperators
     ;
 
 unaryOperators
-    : (MULD|PLUSD|POWD|CONCATD|
+    : (MULD|PLUSD|POWD|CONCATD|HASHD|
         IDENTITY|HASH|ARANGE)   
     ;              
 foldOperators
@@ -94,6 +94,8 @@ PLUSD       : '+:' ;
 MULD        : '*:' ;
 POWD        : '^:' ;
 CONCATD     : ',:' ;
+HASHD       : '#:' ;
+
 
 
 COMPOSE     : '@:' ;
