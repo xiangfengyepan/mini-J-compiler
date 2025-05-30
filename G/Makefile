@@ -20,7 +20,10 @@ pristine: realclean
 	rm -rf __pycache__ .antlr venv
 
 venv:
+	@echo "------------------------------------------------------------------------------"
 	@echo "Creates a virtual environment and installs dependencies, this may take a while"
+	@echo "------------------------------------------------------------------------------"
+
 	python3 -m venv venv
 	. venv/bin/activate && pip install --upgrade pip && pip install antlr4-python3-runtime==4.13.2 numpy
 

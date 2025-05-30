@@ -20,7 +20,13 @@ class EvalVisitor(gVisitor):
 
     @debug_visit
     def visitStatements(self, ctx):
-        return [self.visit(child) for child in ctx.statement()]
+        res = []
+        for child in ctx.statement():
+            try:
+                res.append(self.visit(child))
+            except Exception as e:
+                res.append(f"error: {str(e)}")
+        return res
 
     @debug_visit
     def visitExprStmt(self, ctx):
@@ -76,33 +82,24 @@ class EvalVisitor(gVisitor):
         
     @debug_visit
     def visitBinaryOperators(self, ctx):
-        try:
-            name = ctx.getChild(0).getText()
-            binaryOperator = self.operatorRegistry.getOperator(name, 2)
+        name = ctx.getChild(0).getText()
+        binaryOperator = self.operatorRegistry.getOperator(name, 2)
 
-            if ctx.FLIP():
-                return lambda lhs, rhs: binaryOperator(rhs, lhs)
-            return binaryOperator
-        except Exception as e:
-            return f"error: {str(e)}"
+        if ctx.FLIP():
+            return lambda lhs, rhs: binaryOperator(rhs, lhs)
+        return binaryOperator
+      
 
     @debug_visit
     def visitUnaryOperators(self, ctx):
-        try:
-            name = ctx.getChild(0).getText()
-            return self.operatorRegistry.getOperator(name, 1)
-        except Exception as e:
-            return f"error: {str(e)}"
-
+        name = ctx.getChild(0).getText()
+        return self.operatorRegistry.getOperator(name, 1)
+   
     @debug_visit
     def visitFoldOperators(self, ctx):
-        try:
-            op_symbol = ctx.getChild(0).getText()
-            binaryOperator = self.operatorRegistry.getOperator(op_symbol, 2)
-            return lambda x: reduce(binaryOperator, x)
-        
-        except Exception as e:
-            return f"error: {str(e)}"
+        op_symbol = ctx.getChild(0).getText()
+        binaryOperator = self.operatorRegistry.getOperator(op_symbol, 2)
+        return lambda x: reduce(binaryOperator, x)
 
     @debug_visit
     def visitParent(self, ctx):
@@ -112,14 +109,12 @@ class EvalVisitor(gVisitor):
     def visitVariable(self, ctx):
         name = ctx.ID().getText()
         
-        try: 
-            var = self.operatorRegistry.getOperator(name)
-            if var is None:
-                var = self.variables[name]
-            
-            return var
-        except Exception as e:
-            return f"error: {str(e)}"
+        var = self.operatorRegistry.getOperator(name)
+        if var is None:
+            var = self.variables[name]
+        
+        return var
+    
     @debug_visit
     def visitUnaryFuncCall(self, ctx):
         name = ctx.ID().getText()
@@ -128,8 +123,9 @@ class EvalVisitor(gVisitor):
         self.operatorRegistry.pushStack(name, parameter)
         result = self.operatorRegistry.callOperator(name)
         self.operatorRegistry.popStack(name)
+        
         return result
-
+    
     @debug_visit
     def visitList(self, ctx):
         if (len(ctx.intval()) == 1):
@@ -149,28 +145,20 @@ class EvalVisitor(gVisitor):
         lhs = self.visit(ctx.expr(0))
         rhs = self.visit(ctx.expr(1))
 
-        try:
-            operator = self.visit(ctx.binaryOperators())
-            return operator(lhs, rhs)
-        except Exception as e:
-            return f"error: {str(e)}"
+        operator = self.visit(ctx.binaryOperators())
+        return operator(lhs, rhs)
     
     @debug_visit
     def visitUnaryAritmetic(self, ctx):
         value = self.visit(ctx.expr())
 
-        try:
-            operator = self.visit(ctx.unaryOperators())
-            return operator(value)
-        except Exception as e:
-            return f"error: {str(e)}"
-    
+        operator = self.visit(ctx.unaryOperators())
+        return operator(value)
+
     @debug_visit
     def visitFoldAritmetic(self, ctx):
         value = self.visit(ctx.expr())
 
-        try:
-            operator = self.visit(ctx.foldOperators())
-            return operator(value)
-        except Exception as e:
-            return f"error: {str(e)}"
+        operator = self.visit(ctx.foldOperators())
+        return operator(value)
+ 
